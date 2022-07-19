@@ -21,7 +21,6 @@ export default function NewRes({ reservations }) {
     event.preventDefault();
     // console.log(reservation);
     await createReservation(reservation);
-    validate(formValues);
     history.push("/dashboard");
   }
 
