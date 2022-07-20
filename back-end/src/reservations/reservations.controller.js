@@ -21,20 +21,20 @@ const VALID_PROPERTIES = [
 ];
 
 //validation middleware - request body only includes the valid properties
-function hasOnlyValidProperties(req, res, next) {
-  const { data = {} } = req.body;
+// function hasOnlyValidProperties(req, res, next) {
+//   const { data = {} } = req.body;
 
-  const invalidFields = Object.keys(data).filter(
-    (field) => !VALID_PROPERTIES.includes(field)
-  );
-  if (invalidFields.length) {
-    return next({
-      status: 400,
-      message: `Invalid field(s): ${invalidFields.join(". ")}`,
-    });
-  }
-  next();
-}
+//   const invalidFields = Object.keys(data).filter(
+//     (field) => !VALID_PROPERTIES.includes(field)
+//   );
+//   if (invalidFields.length) {
+//     return next({
+//       status: 400,
+//       message: `Invalid field(s): ${invalidFields.join(". ")}`,
+//     });
+//   }
+//   next();
+// }
 
 async function create(req, res) {
   console.log(req.body.data);
@@ -45,5 +45,5 @@ async function create(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  create: [hasOnlyValidProperties, asyncErrorBoundary(create)],
+  create: asyncErrorBoundary(create),
 };
