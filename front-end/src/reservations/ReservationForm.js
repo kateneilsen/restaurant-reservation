@@ -23,7 +23,9 @@ export default function ReservationForm() {
     async function postData() {
       try {
         await createReservation(reservation, abortController.signal);
-        history.push(`dashboard?date=${reservation.reservation_date}`);
+        console.log(reservation.reservation_date);
+        //routing to Not Found even though the url looks correct
+        history.push(`/dashboard?date=${reservation.reservation_date}`);
       } catch (error) {
         setFormErrors([...formErrors, error.message]);
       }

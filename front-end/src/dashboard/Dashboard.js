@@ -3,7 +3,7 @@ import { listReservations } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
 import { previous, next, today } from "../utils/date-time";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 /**
  * Defines the dashboard page.
@@ -13,28 +13,34 @@ import { Link, useHistory } from "react-router-dom";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState(null);
-
-  const history = useHistory();
+  const [reservationsError, setReservationsError] = useState([]);
 
   //get the date from the url query (?date=2022-07-19)
   const urlDate = useQuery().get("date");
   if (urlDate) {
     date = urlDate;
   }
-  let newDate = new Date(urlDate);
-  newDate = newDate.toDateString();
 
-  useEffect(loadDashboard, [date]);
+  const readDate = new Date(`${date}`).toDateString();
 
-  function loadDashboard() {
+  useEffect(() => {
     const abortController = new AbortController();
-    setReservationsError(null);
-    listReservations({ date }, abortController.signal)
-      .then(setReservations)
-      .catch(setReservationsError);
+    async function loadDashboard() {
+      try {
+        setReservationsError([]);
+        const reservationsByDate = await listReservations(
+          { date },
+          abortController.signal
+        );
+        setReservations(reservationsByDate);
+      } catch (error) {
+        setReservations([]);
+        setReservationsError([error.message]);
+      }
+    }
+    loadDashboard();
     return () => abortController.abort();
-  }
+  }, [date]);
 
   const tableRows = reservations.map((reservation) => (
     <tr key={reservation.reservation_id}>
@@ -66,7 +72,7 @@ function Dashboard({ date }) {
           Tomorrow's Reservations
         </Link>
       </div>
-      <h4 className="mb-0">Reservations for: {newDate}</h4>
+      <h4 className="mb-0">Reservations for: {readDate}</h4>
       <div className="table-responsive">
         <table className="table text-center">
           <thead>

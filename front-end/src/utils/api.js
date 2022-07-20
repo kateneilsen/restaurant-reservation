@@ -68,6 +68,7 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
+//http metthod: post - create a new reservation and post/add to database
 export async function createReservation(reservation, signal) {
   console.debug("createReservation", reservation);
   const url = `${API_BASE_URL}/reservations`;
@@ -77,5 +78,5 @@ export async function createReservation(reservation, signal) {
     body: JSON.stringify({ data: reservation }),
     signal,
   };
-  return await fetchJson(url, options);
+  return await fetchJson(url, options, {});
 }
