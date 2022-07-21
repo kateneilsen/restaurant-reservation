@@ -49,8 +49,8 @@ export default function ReservationForm() {
     <div>
       <h1 className="mb-3">Create Reservation</h1>
       <form className="mb-4" onSubmit={submitHandler}>
-        <div className="row mb-3">
-          <div className="col-6 form-group">
+        <div className="col-6 form-group">
+          <div className="row mb-2">
             <label>
               First Name
               <input
@@ -64,7 +64,7 @@ export default function ReservationForm() {
             </label>
           </div>
 
-          <div className="row mb-3">
+          <div className="row mb-2">
             <label>
               Last Name:
               <input
@@ -78,7 +78,7 @@ export default function ReservationForm() {
             </label>
           </div>
 
-          <div className="row mb-3">
+          <div className="row mb-2">
             <label>
               Mobile Number
               <input
@@ -93,7 +93,7 @@ export default function ReservationForm() {
             </label>
           </div>
 
-          <div className="row mb-3">
+          <div className="row mb-2">
             <label>
               Date
               <input
@@ -107,7 +107,7 @@ export default function ReservationForm() {
             </label>
           </div>
 
-          <div className="row mb-3">
+          <div className="row mb-2">
             <label>
               Time
               <input
@@ -121,7 +121,7 @@ export default function ReservationForm() {
             </label>
           </div>
 
-          <div className="row mb-3">
+          <div className="row mb-2">
             <label>
               Number of People
               <input
@@ -135,14 +135,21 @@ export default function ReservationForm() {
               />
             </label>
           </div>
-
-          <div>
-            <button type="submit">Submit</button>
-            <button type="submit" onClick={cancelHandler}>
-              Cancel
-            </button>
+          <div className="row mb-2">
+            <ErrorAlert errors={errors} />
           </div>
-          <ErrorAlert errors={errors} />
+
+          <button type="submit" className="btn btn-primary m-2">
+            Submit
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-secondary m-2"
+            onClick={cancelHandler}
+          >
+            Cancel
+          </button>
         </div>
       </form>
     </div>

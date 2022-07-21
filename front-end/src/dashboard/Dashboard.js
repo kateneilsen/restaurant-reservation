@@ -13,7 +13,7 @@ import { useHistory } from "react-router-dom";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
-  const [reservationsError, setReservationsError] = useState([]);
+  const [errors, setErrors] = useState([]);
 
   const query = useQuery();
   const history = useHistory();
@@ -29,10 +29,10 @@ function Dashboard({ date }) {
 
   function loadDashboard() {
     const abortController = new AbortController();
-    setReservationsError(null);
+    setErrors(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
-      .catch(setReservationsError);
+      .catch(setErrors);
     return () => abortController.abort();
   }
 
@@ -49,7 +49,7 @@ function Dashboard({ date }) {
   ));
 
   return (
-    <main>
+    <div>
       <h1>Dashboard</h1>
       <div>
         <button
@@ -74,26 +74,9 @@ function Dashboard({ date }) {
           Next
         </button>
       </div>
-      <h4 className="mb-0">Reservations for: {date}</h4>
-      <div className="table-responsive">
-        <table className="table text-center">
-          <thead>
-            <tr>
-              <th scop="col">Reservation #</th>
-              <th scope="col">First Name</th>
-              <th scope="col">Last Name</th>
-              <th scope="col">Mobile Number</th>
-              <th scope="col">Date</th>
-              <th scope="col">Time</th>
-              <th scope="col">Number of People</th>
-            </tr>
-          </thead>
-          <tbody>{tableRows}</tbody>
-        </table>
-      </div>
-      <ErrorAlert error={reservationsError} />
+      <ErrorAlert errors={errors} />
       {/* {JSON.stringify(reservations)} */}
-    </main>
+    </div>
   );
 }
 
