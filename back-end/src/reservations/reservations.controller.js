@@ -72,42 +72,67 @@ function hasValidWeekday(req, res, next) {
 }
 
 //US-02 validate reservation date: Reservation date cannot be in the past
-function hasValidDate(req, res, next) {
+function hasFutureDate(req, res, next) {
   const { reservation_date } = req.body.data;
   const date = new Date(`${reservation_date}`);
+  console.log("reservation date:", date);
 
   const tuesday = 2;
 
   //get day of the week from reservation date
   const weekday = date.getUTCDay();
-  console.log("reservation weekday:", weekday);
+  // console.log("reservation weekday:", weekday);
+
+  const now = new Date();
+  console.log("now:", now);
 
   const currentDate = new Date().getTime();
   // console.log("today's date", currentDate);
 
-  const checkDate = new Date(reservation_date).getTime();
+  const resDate = new Date(reservation_date).getTime();
   // console.log("reservation date:", date);
 
-  if (weekday === tuesday && checkDate < currentDate) {
+  if (weekday === tuesday && resDate < currentDate) {
     next({
       status: 400,
       message:
         "Please enter a valid date and time. The restaurant is closed on Tuesdays and only future reservations are allowed.",
     });
   }
-  if (weekday === tuesday && checkDate >= currentDate) {
+  if (weekday === tuesday && resDate >= currentDate) {
     next({
       status: 400,
       message: "Restaurant is closed on Tuesdays.",
     });
   }
-  if (weekday !== tuesday && checkDate < currentDate) {
+  if (weekday !== tuesday && resDate < currentDate) {
     next({
       status: 400,
       message: "Only future reservations are allowed.",
     });
   }
   next();
+}
+
+//US-03 validate reservation time
+//reservation cannot be earlier than 10:30 AM or later than 9:30 PM
+//reservation date & time combination cannot be in the past
+function hasValidTime(req, res, next) {
+  const { reservation_time } = req.body.data;
+
+  const openTime = 1030;
+  const closeTime = 2130;
+
+  const reservationTime =
+    reservation_time.substring(0, 2) + reservation_time.substring(3);
+  if (reservation > openTime && reservation < close) {
+    return next();
+  } else {
+    return next({
+      status: 400,
+      message: "Reservation must be between 10:30am and 9:30pm",
+    });
+  }
 }
 
 //GET reservations for a given date
@@ -129,7 +154,8 @@ module.exports = {
     hasData,
     hasOnlyValidProperties,
     hasValidPeople,
-    hasValidDate,
+    hasFutureDate,
+    hasValidTime,
     asyncErrorBoundary(create),
   ],
 };
