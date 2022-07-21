@@ -47,7 +47,6 @@ export default function ReservationForm() {
 
   return (
     <div>
-      <ErrorAlert errors={errors} />
       <h1 className="mb-3">Create Reservation</h1>
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="row mb-3">
@@ -143,6 +142,7 @@ export default function ReservationForm() {
               Cancel
             </button>
           </div>
+          <ErrorAlert errors={errors} />
         </div>
       </form>
     </div>
