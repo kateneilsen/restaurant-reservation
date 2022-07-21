@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { createReservation } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 
 export default function ReservationForm() {
   const initialState = {
@@ -12,40 +13,41 @@ export default function ReservationForm() {
     people: "",
   };
 
-  const [reservation, setReservation] = useState({ ...initialState });
-  const [formErrors, setFormErrors] = useState([]);
+  const [formValues, setFormValues] = useState({ ...initialState });
+  const [errors, setErrors] = useState([]);
 
   const history = useHistory();
 
-  const submitHandler = (event) => {
+  async function submitHandler(event) {
     event.preventDefault();
     const abortController = new AbortController();
-    async function postData() {
-      try {
-        await createReservation(reservation, abortController.signal);
-        console.log(reservation.reservation_date);
-        //routing to Not Found even though the url looks correct
-        history.push(`/dashboard?date=${reservation.reservation_date}`);
-      } catch (error) {
-        setFormErrors([...formErrors, error.message]);
-      }
+    try {
+      const responseFromAPI = await createReservation(
+        formValues,
+        abortController.signal
+      );
+      history.push(`/dashboard?date=${formValues.reservation_date}`);
+      return responseFromAPI;
+    } catch (error) {
+      setErrors(error);
     }
-    if (formErrors.length === 0) {
-      postData();
-    }
-  };
+    return () => abortController.abort();
+  }
 
   function changeHandler(event) {
     console.log(event.target.name);
-    setReservation({ ...reservation, [event.target.name]: event.target.value });
+    setFormValues({ ...formValues, [event.target.name]: event.target.value });
   }
 
   function cancelHandler() {
     history.goBack();
   }
 
+  // const today = new Date();
+
   return (
-    <main>
+    <div>
+      <ErrorAlert errors={errors} />
       <h1 className="mb-3">Create Reservation</h1>
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="row mb-3">
@@ -57,11 +59,12 @@ export default function ReservationForm() {
                 name="first_name"
                 type="text"
                 required={true}
-                value={reservation.first_name}
+                value={formValues.first_name}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div className="row mb-3">
             <label>
               Last Name:
@@ -70,11 +73,12 @@ export default function ReservationForm() {
                 name="last_name"
                 type="text"
                 required={true}
-                value={reservation.last_name}
+                value={formValues.last_name}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div className="row mb-3">
             <label>
               Mobile Number
@@ -84,11 +88,12 @@ export default function ReservationForm() {
                 type="text"
                 placeholder="000-000-0000"
                 required={true}
-                value={reservation.mobile_number}
+                value={formValues.mobile_number}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div className="row mb-3">
             <label>
               Date
@@ -97,11 +102,12 @@ export default function ReservationForm() {
                 name="reservation_date"
                 type="date"
                 required={true}
-                value={reservation.reservation_date}
+                value={formValues.reservation_date}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div className="row mb-3">
             <label>
               Time
@@ -110,11 +116,12 @@ export default function ReservationForm() {
                 name="reservation_time"
                 type="time"
                 required={true}
-                value={reservation.reservation_time}
+                value={formValues.reservation_time}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div className="row mb-3">
             <label>
               Number of People
@@ -122,12 +129,14 @@ export default function ReservationForm() {
                 className="form-control"
                 name="people"
                 type="number"
+                min="1"
                 required={true}
-                value={reservation.people}
+                value={formValues.people}
                 onChange={changeHandler}
               />
             </label>
           </div>
+
           <div>
             <button type="submit">Submit</button>
             <button type="submit" onClick={cancelHandler}>
@@ -136,6 +145,6 @@ export default function ReservationForm() {
           </div>
         </div>
       </form>
-    </main>
+    </div>
   );
 }

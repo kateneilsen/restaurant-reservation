@@ -3,7 +3,7 @@ import { listReservations } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
 import { previous, next, today } from "../utils/date-time";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 /**
  * Defines the dashboard page.
@@ -15,32 +15,26 @@ function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState([]);
 
-  //get the date from the url query (?date=2022-07-19)
-  const urlDate = useQuery().get("date");
+  const query = useQuery();
+  const history = useHistory();
+
+  const urlDate = query.get("date");
   if (urlDate) {
     date = urlDate;
   }
 
-  const readDate = new Date(`${date}`).toDateString();
+  //format date to make easy to read
 
-  useEffect(() => {
+  useEffect(loadDashboard, [date]);
+
+  function loadDashboard() {
     const abortController = new AbortController();
-    async function loadDashboard() {
-      try {
-        setReservationsError([]);
-        const reservationsByDate = await listReservations(
-          { date },
-          abortController.signal
-        );
-        setReservations(reservationsByDate);
-      } catch (error) {
-        setReservations([]);
-        setReservationsError([error.message]);
-      }
-    }
-    loadDashboard();
+    setReservationsError(null);
+    listReservations({ date }, abortController.signal)
+      .then(setReservations)
+      .catch(setReservationsError);
     return () => abortController.abort();
-  }, [date]);
+  }
 
   const tableRows = reservations.map((reservation) => (
     <tr key={reservation.reservation_id}>
@@ -57,22 +51,30 @@ function Dashboard({ date }) {
   return (
     <main>
       <h1>Dashboard</h1>
-      <ErrorAlert error={reservationsError} />
       <div>
-        <Link
-          to={`/dashboard?date=${previous(date)}`}
-          className="btn btn-sm-info"
+        <button
+          type="button"
+          className="btn btn-info"
+          onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
         >
-          Yesterday's Reservations
-        </Link>
-        <Link to={`/dashboard?date=${today()}`} className="btn btn-sm-info">
-          Today's Reservations
-        </Link>
-        <Link to={`/dashboard?date=${next(date)}`} className="btn btn-sm-info">
-          Tomorrow's Reservations
-        </Link>
+          Previous
+        </button>
+        <button
+          type="button"
+          className="btn btn-info"
+          onClick={() => history.push(`/dashboard?date=${today()}`)}
+        >
+          Today
+        </button>
+        <button
+          type="button"
+          className="btn btn-info"
+          onClick={() => history.push(`/dashboard?date=${next(date)}`)}
+        >
+          Next
+        </button>
       </div>
-      <h4 className="mb-0">Reservations for: {readDate}</h4>
+      <h4 className="mb-0">Reservations for: {date}</h4>
       <div className="table-responsive">
         <table className="table text-center">
           <thead>
@@ -89,6 +91,8 @@ function Dashboard({ date }) {
           <tbody>{tableRows}</tbody>
         </table>
       </div>
+      <ErrorAlert error={reservationsError} />
+      {/* {JSON.stringify(reservations)} */}
     </main>
   );
 }
