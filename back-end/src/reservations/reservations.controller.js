@@ -42,7 +42,7 @@ function hasOnlyValidProperties(req, res, next) {
   next();
 }
 
-//validation middleware - number of people must be at least 1
+//US-01 number of people must be at least 1
 function hasValidPeople(req, res, next) {
   const people = Number(req.body.data.people);
   if (!people) {
@@ -54,83 +54,79 @@ function hasValidPeople(req, res, next) {
   next();
 }
 
-//US-02 validate reservation date: Restaurant is closed on Tuesdays
-function hasValidWeekday(req, res, next) {
+function hasValidDay(req, res, next) {
   const { reservation_date } = req.body.data;
   const date = new Date(`${reservation_date}`);
 
   const tuesday = 2;
 
   //get day of the week from reservation date
-  const weekday = date.getUTCDay();
-  console.log("reservation weekday:", weekday);
-
-  if (weekday === tuesday) {
-    next({ status: 400, message: "Restaurant is closed on Tuesdays." });
-  }
-  next();
-}
-
-//US-02 validate reservation date: Reservation date cannot be in the past
-function hasFutureDate(req, res, next) {
-  const { reservation_date } = req.body.data;
-  const date = new Date(`${reservation_date}`);
-  console.log("reservation date:", date);
-
-  const tuesday = 2;
-
-  //get day of the week from reservation date
-  const weekday = date.getUTCDay();
-  // console.log("reservation weekday:", weekday);
-
-  const now = new Date();
-  console.log("now:", now);
-
-  const currentDate = new Date().getTime();
-  // console.log("today's date", currentDate);
-
-  const resDate = new Date(reservation_date).getTime();
-  // console.log("reservation date:", date);
-
-  if (weekday === tuesday && resDate < currentDate) {
-    next({
+  const day = date.getUTCDay();
+  if (day === tuesday) {
+    return next({
       status: 400,
       message:
-        "Please enter a valid date and time. The restaurant is closed on Tuesdays and only future reservations are allowed.",
-    });
-  }
-  if (weekday === tuesday && resDate >= currentDate) {
-    next({
-      status: 400,
-      message: "Restaurant is closed on Tuesdays.",
-    });
-  }
-  if (weekday !== tuesday && resDate < currentDate) {
-    next({
-      status: 400,
-      message: "Only future reservations are allowed.",
+        "The restaurant is closed on Tuesdays. Please enter a valid day.",
     });
   }
   next();
 }
 
-//US-03 validate reservation time
-//reservation cannot be earlier than 10:30 AM or later than 9:30 PM
-//reservation date & time combination cannot be in the past
-function hasValidTime(req, res, next) {
+function hasFutureDate(req, res, next) {
+  const { reservation_date } = req.body.data;
   const { reservation_time } = req.body.data;
 
-  const openTime = 1030;
-  const closeTime = 2130;
+  const currentDate = new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York",
+  });
+  console.log("current", currentDate);
+  const date = new Date(reservation_date);
 
-  const reservationTime =
-    reservation_time.substring(0, 2) + reservation_time.substring(3);
-  if (reservation > openTime && reservation < close) {
-    return next();
+  const resYear = date.getFullYear();
+  const resMonth = date.getMonth();
+  const resDay = date.getDate();
+  let [resHours, resMinutes] = reservation_time.split(":");
+  // resHours = Number(resHours);
+  // resMinutes = Number(resMinutes);
+
+  const reservation = new Date(
+    resYear,
+    resMonth,
+    resDay,
+    resHours,
+    resMinutes,
+    0,
+    0
+  ).toLocaleString();
+  console.log("****", reservation);
+  if (reservation > currentDate) {
+    next();
   } else {
     return next({
       status: 400,
-      message: "Reservation must be between 10:30am and 9:30pm",
+      message: "Reservation must be in the future.",
+    });
+  }
+}
+
+function hasValidTime(req, res, next) {
+  const { reservation_time } = req.body.data;
+  //open time is 10:30 am - get total minutes
+  const open = 630;
+  //close time is 9:30 pm (21:30) get total minutes
+  const close = 1290;
+  let [resHours, resMinutes] = reservation_time.split(":");
+  console.log(resHours);
+  resHours = Number(resHours);
+  resMinutes = Number(resMinutes);
+  const resInMinutes = resHours * 60 + resMinutes;
+
+  if (resInMinutes >= open && resInMinutes <= close) {
+    next();
+  } else {
+    return next({
+      status: 400,
+      message: "Reservation must be between 10:30am and 9:30pm.",
     });
   }
 }
@@ -154,6 +150,7 @@ module.exports = {
     hasData,
     hasOnlyValidProperties,
     hasValidPeople,
+    hasValidDay,
     hasFutureDate,
     hasValidTime,
     asyncErrorBoundary(create),

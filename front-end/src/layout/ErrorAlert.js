@@ -9,9 +9,9 @@ import React from "react";
  */
 
 function ErrorAlert({ errors }) {
-  return (
-    errors && <div className="alert alert-danger m-2">{errors.message}</div>
-  );
+  return errors?.message ? (
+    <div className="alert alert-danger m-2">{errors.message}</div>
+  ) : null;
 }
 
 export default ErrorAlert;
