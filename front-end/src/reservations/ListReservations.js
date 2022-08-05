@@ -1,6 +1,8 @@
 import React from "react";
 
 export default function ListReservations({ reservations }) {
+  function seatHandler() {}
+
   const tableRows = reservations.map((reservation) => (
     <tr key={reservation.reservation_id}>
       <th scope="row">{reservation.reservation_id}</th>
@@ -10,10 +12,15 @@ export default function ListReservations({ reservations }) {
       <td>{reservation.reservation_date}</td>
       <td>{reservation.reservation_time}</td>
       <td>{reservation.people}</td>
+      <td>
+        <button type="button" className="btn btn-primary">
+          Seat
+        </button>
+      </td>
     </tr>
   ));
   return (
-    <div>
+    <div class="g-col-8">
       <table className="table text-center">
         <thead>
           <tr>
@@ -24,6 +31,7 @@ export default function ListReservations({ reservations }) {
             <th scope="col">Date</th>
             <th scope="col">Time</th>
             <th scope="col">Party Size</th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody className="text-">{tableRows}</tbody>

@@ -51,8 +51,7 @@ export default function ReservationForm() {
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="col-6 form-group">
           <div className="row mb-2">
-            <label>
-              First Name
+            <label>First Name</label>
               <input
                 className="form-control"
                 name="first_name"
@@ -61,12 +60,10 @@ export default function ReservationForm() {
                 value={formValues.first_name}
                 onChange={changeHandler}
               />
-            </label>
           </div>
 
           <div className="row mb-2">
-            <label>
-              Last Name:
+            <label>Last Name:</label>
               <input
                 className="form-control"
                 name="last_name"
@@ -75,12 +72,10 @@ export default function ReservationForm() {
                 value={formValues.last_name}
                 onChange={changeHandler}
               />
-            </label>
           </div>
 
           <div className="row mb-2">
-            <label>
-              Mobile Number
+            <label>Mobile Number</label>
               <input
                 className="form-control"
                 name="mobile_number"
@@ -90,12 +85,10 @@ export default function ReservationForm() {
                 value={formValues.mobile_number}
                 onChange={changeHandler}
               />
-            </label>
           </div>
 
           <div className="row mb-2">
-            <label>
-              Date
+            <label>Date</label>
               <input
                 className="form-control"
                 name="reservation_date"
@@ -104,12 +97,11 @@ export default function ReservationForm() {
                 value={formValues.reservation_date}
                 onChange={changeHandler}
               />
-            </label>
+   
           </div>
 
           <div className="row mb-2">
-            <label>
-              Time
+            <label>Time</label>
               <input
                 className="form-control"
                 name="reservation_time"
@@ -118,12 +110,13 @@ export default function ReservationForm() {
                 value={formValues.reservation_time}
                 onChange={changeHandler}
               />
-            </label>
+
           </div>
 
           <div className="row mb-2">
             <label>
-              Number of People
+              Number of People     
+              </label>
               <input
                 className="form-control"
                 name="people"
@@ -133,7 +126,6 @@ export default function ReservationForm() {
                 value={formValues.people}
                 onChange={changeHandler}
               />
-            </label>
           </div>
           <div className="row mb-2">
             <ErrorAlert errors={errors} />

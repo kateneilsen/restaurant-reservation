@@ -5,6 +5,7 @@ import useQuery from "../utils/useQuery";
 import { previous, next, today } from "../utils/date-time";
 import { useHistory } from "react-router-dom";
 import ListReservations from "../reservations/ListReservations";
+import ListTables from "../tables/ListTables";
 
 /**
  * Defines the dashboard page.
@@ -14,6 +15,7 @@ import ListReservations from "../reservations/ListReservations";
  */
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
+  const [tables, setTables] = useState([]);
   const [errors, setErrors] = useState([]);
 
   //store query date in state so that it is formatted correctly
@@ -76,7 +78,10 @@ function Dashboard({ date }) {
         </button>
       </div>
       <h2>Reservations for: {date}</h2>
+
       <ListReservations reservations={reservations} />
+
+      <ListTables />
 
       <ErrorAlert errors={errors} />
       {/* {JSON.stringify(reservations)} */}
