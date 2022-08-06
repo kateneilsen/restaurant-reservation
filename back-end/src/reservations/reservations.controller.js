@@ -3,6 +3,7 @@
  */
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
+const hasProperties = require("../errors/hasProperties");
 
 //validate request body
 function hasData(req, res, next) {
@@ -24,6 +25,8 @@ const VALID_PROPERTIES = [
   "reservation_time",
   "people",
 ];
+
+const hasRequiredProperties = hasProperties(VALID_PROPERTIES);
 
 //validation middleware - request body only includes the valid properties
 function hasOnlyValidProperties(req, res, next) {
@@ -138,6 +141,22 @@ async function list(req, res) {
   res.json({ data: response });
 }
 
+//validate reservation id
+async function reservationExists(req, res, next) {
+  const { reservation_id } = await service.read(req.params);
+  if (reservation_id) {
+    res.locals.reservation_id = reservation_id;
+    return next();
+  }
+  next({ status: 404, message: "Reservation cannot be found." });
+}
+
+//GET reservation by id
+function read(req, res) {
+  const { reservation: data } = res.locals;
+  res.json({ data });
+}
+
 //POST new reservation
 async function create(req, res) {
   const newReservation = await service.create(req.body.data);
@@ -146,6 +165,7 @@ async function create(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
+  read: [asyncErrorBoundary(reservationExists), read],
   create: [
     hasData,
     hasOnlyValidProperties,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import useQuery from "../utils/useQuery";
 import { previous, next, today } from "../utils/date-time";
@@ -30,6 +30,7 @@ function Dashboard({ date }) {
   }
 
   useEffect(loadDashboard, [date]);
+  // useEffect(loadTables, []);
 
   // //format date to make easy to read
   // useEffect(() => {
@@ -44,10 +45,15 @@ function Dashboard({ date }) {
 
   function loadDashboard() {
     const abortController = new AbortController();
-    setErrors(null);
     listReservations({ date }, abortController.signal)
       .then(setReservations)
       .catch(setErrors);
+    return () => abortController.abort();
+  }
+
+  function loadTables() {
+    const abortController = new AbortController();
+    listTables(abortController.signal).then(setTables).catch(setErrors);
     return () => abortController.abort();
   }
 
@@ -67,7 +73,7 @@ function Dashboard({ date }) {
           className="btn btn-info m-2"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
         >
-          Today
+          {date}
         </button>
         <button
           type="button"
@@ -77,12 +83,18 @@ function Dashboard({ date }) {
           <span className="bi bi-arrow-right-square-fill"></span>
         </button>
       </div>
-      <h2>Reservations for: {date}</h2>
+      {/* <h2>Reservations for: {date}</h2> */}
 
-      <ListReservations reservations={reservations} />
-
-      <ListTables />
-
+      <div className="container">
+        <div className="row">
+          <div className="col-6">
+            <ListReservations reservations={reservations} />
+          </div>
+          <div className="col-6">
+            <ListTables tables={tables} />
+          </div>
+        </div>
+      </div>
       <ErrorAlert errors={errors} />
       {/* {JSON.stringify(reservations)} */}
     </div>
