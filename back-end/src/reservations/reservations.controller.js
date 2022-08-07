@@ -5,7 +5,8 @@ const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
-// validate request body
+/*VALIDATION*/
+
 function hasData(req, res, next) {
   const data = req.body.data;
   if (!data) {
@@ -129,13 +130,6 @@ function hasValidTime(req, res, next) {
   next();
 }
 
-//GET reservations for a given date
-async function list(req, res) {
-  const { date } = req.query;
-  const response = await service.list(date);
-  res.json({ data: response });
-}
-
 //validate reservation id
 async function reservationExists(req, res, next) {
   const { reservation_id } = req.params;
@@ -151,16 +145,27 @@ async function reservationExists(req, res, next) {
   });
 }
 
-//GET reservation by id
+/*CRUDL*/
+
+async function list(req, res) {
+  const { date } = req.query;
+  const response = await service.list(date);
+  res.json({ data: response });
+}
+
 function read(req, res) {
   const data = res.locals.reservation;
   res.json({ data });
 }
 
-//POST new reservation
 async function create(req, res) {
   const data = await service.create(req.body.data);
   res.status(201).json({ data });
+}
+
+async function update(req, res) {
+  const data = await service.update(req.body.data);
+  res.json({ data });
 }
 
 module.exports = {

@@ -26,7 +26,7 @@ export default function ListTables({ tables }) {
               <div className="row">Capacity: {table.capacity}</div>
             </div>
             <div className="col">
-              <div className="row" data-table-id-status={`${table.table_id}`}>
+              <div className="row" data-table-id-status={table.table_id}>
                 {table.reservation_id ? "Occupied" : "Free"}
               </div>
             </div>

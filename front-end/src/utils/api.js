@@ -104,3 +104,15 @@ export async function createTable(table, signal) {
   };
   return await fetchJson(url, options, {});
 }
+
+//updates PUT new table to database
+export async function updateTable(reservationId, tableId, signal) {
+  const url = `${API_BASE_URL}/tables/${tableId}/seat`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { reservation_id: reservationId } }),
+    signal,
+  };
+  return await fetchJson(url, options, {});
+}

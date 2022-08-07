@@ -1,56 +1,68 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import { listTables, updateTable } from "../utils/api";
+import ErrorAlert from "../layout/ErrorAlert";
 
-export default function ReservationSeats({ isShown, tables }) {
+export default function ReservationSeats() {
+  const [tables, setTables] = useState([]);
+  const [selectOptions, setSelectOptions] = useState("");
+  const [errors, setErrors] = useState(null);
+  const { reservation_id } = useParams();
+  const history = useHistory();
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    setErrors(null);
+    async function loadTables() {
+      try {
+        const response = await listTables(abortController.signal);
+        setTables(response);
+      } catch (error) {
+        setErrors(error);
+      }
+    }
+    loadTables();
+    return () => abortController.abort();
+  }, []);
+
+  function changeHandler({ target }) {
+    setSelectOptions({ [target.name]: target.value });
+  }
+
+  function submitHandler(event) {
+    event.preventDefault();
+    const abortController = new AbortController();
+    updateTable(
+      reservation_id,
+      Number(selectOptions.table_id),
+      abortController.signal
+    )
+      .then(() => history.push("/"))
+      .catch(setErrors);
+
+    return () => abortController.abort();
+  }
+
   return (
     <div>
-      <div className="modal" tabindex="-1">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Choose a Table</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              <div>
-                <form>
-                  <label htmlFor="table_id">
-                    Choose a Table
-                    <select
-                      className="form-select"
-                      size="3"
-                      aria-label="size 3 select example"
-                    >
-                      <option selected>Select an Option</option>
-                      {tables.map((table) => (
-                        <option key={table.table_id} value={table.table_id}>
-                          {table.table_name} - {table.capacity}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </form>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button type="button" className="btn btn-primary">
-                Save changes
-              </button>
-            </div>
-          </div>
+      <h4>Seat Reservation:{reservation_id}</h4>
+      <form onSubmit={submitHandler}>
+        <div>
+          <select className="custom-select" onChange={changeHandler}>
+            <option selected>Select a table </option>
+            {tables.map((table) => (
+              <option value={table.table_id} key={table.table_id}>
+                {table.table_name} - {table.capacity}
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
+        <button className="btn btn-primary btn-sm" type="submit">
+          Submit
+        </button>
+        <button className="btn btn-warning btn-sm">Cancel</button>
+      </form>
+      <ErrorAlert errors={errors} />
     </div>
   );
 }

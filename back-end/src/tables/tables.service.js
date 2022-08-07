@@ -10,13 +10,26 @@ function read(table_id) {
 
 function create(table) {
   return knex("tables")
-    .insert(table)
-    .returning("*")
+    .insert(table, "*")
     .then((createdRecords) => createdRecords[0]);
+}
+
+//update table when reservation seated at table
+function update(reservation_id, table_id) {
+  return knex("reservations")
+    .where({ reservation_id })
+    .update({ status: "seated" })
+    .then(() => {
+      return knex("tables")
+        .where({ table_id })
+        .update({ reservation_id })
+        .returning("*");
+    });
 }
 
 module.exports = {
   list,
   read,
   create,
+  update,
 };
