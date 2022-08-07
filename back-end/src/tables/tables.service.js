@@ -18,7 +18,7 @@ function create(table) {
 function update(reservation_id, table_id) {
   return knex("reservations")
     .where({ reservation_id })
-    .update({ status: "seated" })
+    .returning("*")
     .then(() => {
       return knex("tables")
         .where({ table_id })

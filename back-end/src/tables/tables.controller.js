@@ -4,11 +4,11 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
 //US-04 valid table properties
-const VALID_PROPERTIES = ["table_name", "capacity", "reservation_id"];
+const validProperties = ["table_name", "capacity", "reservation_id"];
 
 function hasValidProperties(req, res, next) {
   const invalidFields = Object.keys(req.body.data).filter(
-    (field) => !VALID_PROPERTIES.includes(field)
+    (field) => !validProperties.includes(field)
   );
   if (invalidFields.length) {
     return next({
@@ -21,8 +21,8 @@ function hasValidProperties(req, res, next) {
 
 //validate request body has required fields
 const hasRequiredProperties = hasProperties("table_name", "capacity");
+const hasResIdProperty = hasProperties("reservation_id");
 
-//validate data
 function hasData(req, res, next) {
   const { data } = req.body;
   if (data) {
@@ -34,54 +34,6 @@ function hasData(req, res, next) {
   });
 }
 
-//US-04 table validations
-function validTableName(req, res, next) {
-  const { table_name } = req.body.data;
-  if (table_name.length < 2 || !table_name) {
-    return next({
-      status: 400,
-      message: `Table name must be at least 2 characters long.`,
-    });
-  }
-  next();
-}
-
-function validCapacity(req, res, next) {
-  const { capacity } = req.body.data;
-  if (capacity <= 0) {
-    return next({
-      status: 400,
-      message: "Table capacity must be at least 1.",
-    });
-  }
-  if (typeof capacity !== "number") {
-    return next({
-      status: 400,
-      message: "Table capacity must be a number.",
-    });
-  }
-  next();
-}
-
-async function reservationExists(req, res, next) {
-  const { reservation_id } = req.body.data;
-  const reservation = await reservationsService.read(reservation_id);
-  console.log(reservation_id);
-  if (!reservation_id) {
-    return next({
-      status: 400,
-      message: "A reservation id is required",
-    });
-  }
-  if (!reservation) {
-    return next({
-      status: 404,
-      message: `Reservation cannot be found.`,
-    });
-  }
-  next();
-}
-
 async function tableExists(req, res, next) {
   const table = await service.read(req.params.table_id);
   if (table) {
@@ -91,25 +43,58 @@ async function tableExists(req, res, next) {
   next({ status: 404, message: `${table} does not exist.` });
 }
 
-//check if table is free or occupied
-function occupiedTable(req, res, next) {
-  const occupied = res.locals.table.reservation_id;
-  if (occupied) {
+async function reservationExists(req, res, next) {
+  const { reservation_id } = req.body.data;
+  if (!reservation_id) {
     return next({
       status: 400,
-      message: "Selected table is occupied. Select a different table.",
+      message: `a reservation_id is required`,
+    });
+  }
+  const reservation = await reservationsService.read(reservation_id);
+  if (reservation) {
+    res.locals.reservation = reservation;
+    return next();
+  } else {
+    return next({
+      status: 404,
+      message: `Reservation cannot be found ${reservation_id}`,
+    });
+  }
+}
+
+//US-04 table validations
+function validTableName(req, res, next) {
+  const { table_name } = req.body.data;
+  const length = table_name.length;
+
+  if (length >= 2) {
+    return next();
+  }
+  return nect({
+    status: 400,
+    message: "table_name must be at least 2 characters long.",
+  });
+}
+
+function validCapacity(req, res, next) {
+  const { capacity } = req.body.data;
+  if (!Number.isInteger(capacity)) {
+    return next({
+      status: 400,
+      message: "Table capacity must be at least 1.",
     });
   }
   next();
 }
 
-//check if table is unoccupied
-function notOccupied(req, res, next) {
-  const table = res.locals.table;
-  if (table.reservation_id === null) {
+//check if table is  occupied
+function occupiedTable(req, res, next) {
+  const occupied = res.locals.table.reservation_id;
+  if (occupied) {
     return next({
       status: 400,
-      message: `Table is not occupied.`,
+      message: `The selected table ${res.locals.table.table_id} is occupied. Choose another table.`,
     });
   }
   next();
@@ -117,10 +102,8 @@ function notOccupied(req, res, next) {
 
 //make sure table will fit number of people for reservation
 function sufficientCapacity(req, res, next) {
-  const { capacity } = res.locals.table;
-  const { people } = res.locals.reservation;
-  console.log("people:", people, typeof people);
-  console.log("capacity:", capacity, typeof capacity);
+  const capacity = res.locals.table.capacity;
+  const people = res.locals.reservation.people;
   if (people > capacity) {
     return next({
       status: 400,
@@ -156,7 +139,6 @@ async function update(req, res) {
 
 module.exports = {
   list: asyncErrorBoundary(list),
-  read: [asyncErrorBoundary(tableExists), read],
   create: [
     hasData,
     hasValidProperties,
@@ -169,9 +151,8 @@ module.exports = {
     hasData,
     asyncErrorBoundary(reservationExists),
     asyncErrorBoundary(tableExists),
-    hasRequiredProperties,
+    hasResIdProperty,
     occupiedTable,
-    notOccupied,
     sufficientCapacity,
     asyncErrorBoundary(update),
   ],

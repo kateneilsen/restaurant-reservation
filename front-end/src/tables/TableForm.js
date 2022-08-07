@@ -4,12 +4,11 @@ import { useHistory } from "react-router-dom";
 import { createTable } from "../utils/api";
 
 export default function TableForm() {
-  const initialState = {
+  const [formValues, setFormValues] = useState({
     table_name: "",
     capacity: "",
-  };
+  });
 
-  const [formValues, setFormValues] = useState({ ...initialState });
   const [errors, setErrors] = useState([]);
 
   const history = useHistory();
@@ -19,20 +18,23 @@ export default function TableForm() {
   }
 
   function changeHandler(event) {
-    console.log(event.target.name);
     setFormValues({ ...formValues, [event.target.name]: event.target.value });
   }
 
   async function submitHandler(event) {
     event.preventDefault();
+    setErrors([]);
     const abortController = new AbortController();
     formValues.capacity = Number(formValues.capacity);
     try {
       await createTable(formValues, abortController.signal);
       history.push("/dashboard");
     } catch (error) {
-      setErrors(error);
+      if (error.name !== "AbortError") {
+        setErrors(error);
+      }
     }
+    return () => abortController.abort();
   }
 
   return (
@@ -43,6 +45,7 @@ export default function TableForm() {
           <div className="row mb-2">
             <label>Table Name</label>
             <input
+              id="table_name"
               className="form-control"
               name="table_name"
               type="text"
@@ -55,12 +58,13 @@ export default function TableForm() {
           <div className="row mb-2">
             <label>Capacity</label>
             <input
+              id="capacity"
               className="form-control"
               name="capacity"
               type="number"
               min={1}
               required={true}
-              placeholder="#"
+              placeholder="1"
               value={formValues.capacity}
               onChange={changeHandler}
             />
@@ -80,6 +84,7 @@ export default function TableForm() {
             Cancel
           </button>
         </div>
+        <ErrorAlert error={errors} />
       </form>
     </div>
   );
