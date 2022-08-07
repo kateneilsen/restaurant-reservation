@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import ReservationSeats from "./ReservationSeats";
 
-export default function ListReservations({ reservations }) {
-  function seatHandler() {}
+export default function ListReservations({ reservations, tables }) {
+  const [isShown, setIsShown] = useState(false);
+
+  const handleClick = (event) => {
+    //toggle shown state
+    setIsShown((current) => !current);
+  };
 
   return (
     <div className="mt-4">
@@ -23,9 +29,18 @@ export default function ListReservations({ reservations }) {
                 </p>
               </div>
               <div className="col-2 p-2">
-                <button type="button" className="btn btn-primary btn-sm">
-                  Seat
-                </button>
+                <a href={`/reservations/${reservation.reservation_id}/seat`}>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    onClick={handleClick}
+                  >
+                    Seat
+                  </button>
+                  {isShown && (
+                    <ReservationSeats isShown={isShown} tables={tables} />
+                  )}
+                </a>
               </div>
             </div>
           </div>

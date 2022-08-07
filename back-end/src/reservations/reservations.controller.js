@@ -5,7 +5,7 @@ const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 const hasProperties = require("../errors/hasProperties");
 
-//validate request body
+// validate request body
 function hasData(req, res, next) {
   const data = req.body.data;
   if (!data) {
@@ -26,9 +26,16 @@ const VALID_PROPERTIES = [
   "people",
 ];
 
-const hasRequiredProperties = hasProperties(VALID_PROPERTIES);
+const hasRequiredProperties = hasProperties(
+  "first_name",
+  "last_name",
+  "mobile_number",
+  "reservation_date",
+  "reservation_time",
+  "people"
+);
 
-//validation middleware - request body only includes the valid properties
+// //validation middleware - request body only includes the valid properties
 function hasOnlyValidProperties(req, res, next) {
   console.log(req.body.data);
   const { data = {} } = req.body;
@@ -47,11 +54,24 @@ function hasOnlyValidProperties(req, res, next) {
 
 //US-01 number of people must be at least 1
 function hasValidPeople(req, res, next) {
-  const people = Number(req.body.data.people);
-  if (!people) {
+  const people = req.body.data.people;
+  if (typeof people === "string" || people <= 0) {
     return next({
       status: 400,
-      message: "Number of people must be at least 1.",
+      message: "people must be a number",
+    });
+  }
+  next();
+}
+
+//valid date format
+function hasValidDate(req, res, next) {
+  const date = req.body.data.reservation_date;
+  const validDate = /\d{4}-\d{2}-\d{2}/.test(date);
+  if (!date || !validDate) {
+    next({
+      status: 400,
+      message: "reservation_date is not valid",
     });
   }
   next();
@@ -76,62 +96,37 @@ function hasValidDay(req, res, next) {
 }
 
 function hasFutureDate(req, res, next) {
-  const { reservation_date } = req.body.data;
-  const { reservation_time } = req.body.data;
+  const reservationDate = req.body.data.reservation_date;
+  const reservationTime = req.body.data.reservation_time;
 
-  const currentDate = new Date().toLocaleString("en-US", {
-    timeZone: "America/New_York",
-  });
-  console.log("current", currentDate);
-  const date = new Date(reservation_date);
-
-  const resYear = date.getFullYear();
-  const resMonth = date.getMonth();
-  const resDay = date.getDate();
-  let [resHours, resMinutes] = reservation_time.split(":");
-  // resHours = Number(resHours);
-  // resMinutes = Number(resMinutes);
-
-  const reservation = new Date(
-    resYear,
-    resMonth,
-    resDay,
-    resHours,
-    resMinutes,
-    0,
-    0
-  ).toLocaleString();
-  console.log("****", reservation);
-  if (reservation > currentDate) {
-    next();
-  } else {
+  const date = new Date(`${reservationDate} ${reservationTime}`);
+  if (new Date() > date) {
     return next({
       status: 400,
       message: "Reservation must be in the future.",
     });
   }
+  next();
 }
 
 function hasValidTime(req, res, next) {
   const { reservation_time } = req.body.data;
-  //open time is 10:30 am - get total minutes
-  const open = 630;
-  //close time is 9:30 pm (21:30) get total minutes
-  const close = 1290;
-  let [resHours, resMinutes] = reservation_time.split(":");
-  console.log(resHours);
-  resHours = Number(resHours);
-  resMinutes = Number(resMinutes);
-  const resInMinutes = resHours * 60 + resMinutes;
+  const validTime = /[0-9]{2}:[0-9]{2}/.test(reservation_time);
 
-  if (resInMinutes >= open && resInMinutes <= close) {
-    next();
-  } else {
+  if (!reservation_time || !validTime) {
+    return next({
+      status: 400,
+      message: "reservation_time is not valid.",
+    });
+  }
+
+  if (reservation_time >= "21:30" || reservation_time <= "10:30") {
     return next({
       status: 400,
       message: "Reservation must be between 10:30am and 9:30pm.",
     });
   }
+  next();
 }
 
 //GET reservations for a given date
@@ -143,24 +138,29 @@ async function list(req, res) {
 
 //validate reservation id
 async function reservationExists(req, res, next) {
-  const { reservation_id } = await service.read(req.params);
-  if (reservation_id) {
-    res.locals.reservation_id = reservation_id;
+  const { reservation_id } = req.params;
+  const reservation = await service.read(reservation_id);
+
+  if (reservation) {
+    res.locals.reservation = reservation;
     return next();
   }
-  next({ status: 404, message: "Reservation cannot be found." });
+  next({
+    status: 404,
+    message: `${reservation_id} not found.`,
+  });
 }
 
 //GET reservation by id
 function read(req, res) {
-  const { reservation: data } = res.locals;
+  const data = res.locals.reservation;
   res.json({ data });
 }
 
 //POST new reservation
 async function create(req, res) {
-  const newReservation = await service.create(req.body.data);
-  res.status(201).json({ data: newReservation });
+  const data = await service.create(req.body.data);
+  res.status(201).json({ data });
 }
 
 module.exports = {
@@ -169,7 +169,9 @@ module.exports = {
   create: [
     hasData,
     hasOnlyValidProperties,
+    hasRequiredProperties,
     hasValidPeople,
+    hasValidDate,
     hasValidDay,
     hasFutureDate,
     hasValidTime,

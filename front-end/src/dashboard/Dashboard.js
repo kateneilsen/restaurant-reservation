@@ -30,7 +30,7 @@ function Dashboard({ date }) {
   }
 
   useEffect(loadDashboard, [date]);
-  // useEffect(loadTables, []);
+  useEffect(loadTables, []);
 
   // //format date to make easy to read
   // useEffect(() => {
@@ -88,7 +88,7 @@ function Dashboard({ date }) {
       <div className="container">
         <div className="row">
           <div className="col-6">
-            <ListReservations reservations={reservations} />
+            <ListReservations reservations={reservations} tables={tables} />
           </div>
           <div className="col-6">
             <ListTables tables={tables} />

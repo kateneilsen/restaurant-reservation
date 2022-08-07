@@ -1,8 +1,8 @@
 // checks if request body includes the required fields
 
 function hasProperties(...properties) {
-  return function (res, req, next) {
-    const { data = {} } = res.body;
+  return function (req, res, next) {
+    const { data = {} } = req.body;
 
     try {
       properties.forEach((property) => {

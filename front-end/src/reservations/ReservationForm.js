@@ -52,80 +52,76 @@ export default function ReservationForm() {
         <div className="col-6 form-group">
           <div className="row mb-2">
             <label>First Name</label>
-              <input
-                className="form-control"
-                name="first_name"
-                type="text"
-                required={true}
-                value={formValues.first_name}
-                onChange={changeHandler}
-              />
+            <input
+              className="form-control"
+              name="first_name"
+              type="text"
+              required={true}
+              value={formValues.first_name}
+              onChange={changeHandler}
+            />
           </div>
 
           <div className="row mb-2">
             <label>Last Name:</label>
-              <input
-                className="form-control"
-                name="last_name"
-                type="text"
-                required={true}
-                value={formValues.last_name}
-                onChange={changeHandler}
-              />
+            <input
+              className="form-control"
+              name="last_name"
+              type="text"
+              required={true}
+              value={formValues.last_name}
+              onChange={changeHandler}
+            />
           </div>
 
           <div className="row mb-2">
             <label>Mobile Number</label>
-              <input
-                className="form-control"
-                name="mobile_number"
-                type="text"
-                placeholder="000-000-0000"
-                required={true}
-                value={formValues.mobile_number}
-                onChange={changeHandler}
-              />
+            <input
+              className="form-control"
+              name="mobile_number"
+              type="text"
+              placeholder="000-000-0000"
+              required={true}
+              value={formValues.mobile_number}
+              onChange={changeHandler}
+            />
           </div>
 
           <div className="row mb-2">
             <label>Date</label>
-              <input
-                className="form-control"
-                name="reservation_date"
-                type="date"
-                required={true}
-                value={formValues.reservation_date}
-                onChange={changeHandler}
-              />
-   
+            <input
+              className="form-control"
+              name="reservation_date"
+              type="date"
+              required={true}
+              value={formValues.reservation_date}
+              onChange={changeHandler}
+            />
           </div>
 
           <div className="row mb-2">
             <label>Time</label>
-              <input
-                className="form-control"
-                name="reservation_time"
-                type="time"
-                required={true}
-                value={formValues.reservation_time}
-                onChange={changeHandler}
-              />
-
+            <input
+              className="form-control"
+              name="reservation_time"
+              type="time"
+              required={true}
+              value={formValues.reservation_time}
+              onChange={changeHandler}
+            />
           </div>
 
           <div className="row mb-2">
-            <label>
-              Number of People     
-              </label>
-              <input
-                className="form-control"
-                name="people"
-                type="number"
-                min="1"
-                required={true}
-                value={formValues.people}
-                onChange={changeHandler}
-              />
+            <label>Number of People</label>
+            <input
+              className="form-control"
+              name="people"
+              type="number"
+              min={1}
+              required={true}
+              value={formValues.people}
+              onChange={changeHandler}
+            />
           </div>
           <div className="row mb-2">
             <ErrorAlert errors={errors} />

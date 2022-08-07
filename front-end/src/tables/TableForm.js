@@ -26,23 +26,19 @@ export default function TableForm() {
   async function submitHandler(event) {
     event.preventDefault();
     const abortController = new AbortController();
+    formValues.capacity = Number(formValues.capacity);
     try {
-      const responseFromAPI = await createTable(
-        formValues,
-        abortController.signal
-      );
+      await createTable(formValues, abortController.signal);
       history.push("/dashboard");
-      return responseFromAPI;
     } catch (error) {
       setErrors(error);
     }
-    return () => abortController.abort();
   }
 
   return (
     <div>
       <h1 className="mb-3">Create Table</h1>
-      <form className="mb-4" onSubmit={submitHandler}>
+      <form onSubmit={submitHandler} className="mb-4">
         <div className="col-6 form-group">
           <div className="row mb-2">
             <label>Table Name</label>
@@ -52,6 +48,8 @@ export default function TableForm() {
               type="text"
               required={true}
               placeholder="Table Name"
+              value={formValues.table_name}
+              onChange={changeHandler}
             />
           </div>
           <div className="row mb-2">
@@ -60,8 +58,11 @@ export default function TableForm() {
               className="form-control"
               name="capacity"
               type="number"
+              min={1}
               required={true}
-              placeholder=""
+              placeholder="#"
+              value={formValues.capacity}
+              onChange={changeHandler}
             />
           </div>
           <div className="row mb-2">
