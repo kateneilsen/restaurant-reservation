@@ -27,9 +27,17 @@ function update(reservation_id, table_id) {
     });
 }
 
+function deleteReservation({ table_id, reservation_id }) {
+  return knex("table_id")
+    .where({ table_id })
+    .update({ reservation_id: null })
+    .returning("*");
+}
+
 module.exports = {
   list,
   read,
   create,
   update,
+  deleteReservation,
 };

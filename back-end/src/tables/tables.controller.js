@@ -40,7 +40,7 @@ async function tableExists(req, res, next) {
     res.locals.table = table;
     return next();
   }
-  next({ status: 404, message: `${table} does not exist.` });
+  return next({ status: 404, message: `${table} does not exist.` });
 }
 
 async function reservationExists(req, res, next) {
@@ -66,15 +66,14 @@ async function reservationExists(req, res, next) {
 //US-04 table validations
 function validTableName(req, res, next) {
   const { table_name } = req.body.data;
-  const length = table_name.length;
-
-  if (length >= 2) {
+  if (table_name.length > 1) {
     return next();
+  } else {
+    return next({
+      status: 400,
+      message: "table_name must be at least 2 characters in length.",
+    });
   }
-  return nect({
-    status: 400,
-    message: "table_name must be at least 2 characters long.",
-  });
 }
 
 function validCapacity(req, res, next) {
@@ -90,8 +89,8 @@ function validCapacity(req, res, next) {
 
 //check if table is  occupied
 function occupiedTable(req, res, next) {
-  const occupied = res.locals.table.reservation_id;
-  if (occupied) {
+  const { reservation_id } = res.locals.table;
+  if (reservation_id) {
     return next({
       status: 400,
       message: `The selected table ${res.locals.table.table_id} is occupied. Choose another table.`,
@@ -108,6 +107,18 @@ function sufficientCapacity(req, res, next) {
     return next({
       status: 400,
       message: `Table capacity is less than number of people. Select a table with a capacity that is equal to or greater than the number of people. `,
+    });
+  }
+  next();
+}
+
+//check if table is not occupied
+function checkIfOccupied(req, res, next) {
+  const { reservation_id } = res.locals.table;
+  if (!reservation_id) {
+    next({
+      status: 400,
+      message: "Table is not occupied",
     });
   }
   next();
@@ -137,6 +148,13 @@ async function update(req, res) {
   res.json({ data });
 }
 
+async function destroy(req, res) {
+  const { table_id } = req.params;
+  const { table } = req.body.data;
+  await service.deleteReservation(table_id, table.reservation_id);
+  res.status(200).json({});
+}
+
 module.exports = {
   list: asyncErrorBoundary(list),
   create: [
@@ -155,5 +173,10 @@ module.exports = {
     occupiedTable,
     sufficientCapacity,
     asyncErrorBoundary(update),
+  ],
+  delete: [
+    asyncErrorBoundary(tableExists),
+    checkIfOccupied,
+    asyncErrorBoundary(destroy),
   ],
 };

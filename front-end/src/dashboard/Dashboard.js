@@ -18,9 +18,6 @@ function Dashboard({ date }) {
   const [tables, setTables] = useState([]);
   const [errors, setErrors] = useState([]);
 
-  //store query date in state so that it is formatted correctly
-  // const [displayDate, setDisplayDate] = useState("");
-
   const query = useQuery();
   const history = useHistory();
 
@@ -31,17 +28,6 @@ function Dashboard({ date }) {
 
   useEffect(loadDashboard, [date]);
   useEffect(loadTables, []);
-
-  // //format date to make easy to read
-  // useEffect(() => {
-  //   if (urlDate) {
-  //     let newDate = urlDate.toUTCString();
-  //     setDisplayDate(newDate);
-  //   } else {
-  //     let newDate = new Date(date).toDateString();
-  //     setDisplayDate(newDate);
-  //   }
-  // });
 
   function loadDashboard() {
     const abortController = new AbortController();
