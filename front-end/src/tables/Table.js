@@ -1,17 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { deleteTableRes } from "../utils/api";
 import { useParams } from "react-router";
+import ErrorAlert from "../layout/ErrorAlert";
 
 export default function Table({ table }) {
-  const { table_id } = useParams();
+  const [error, setError] = useState(false);
 
-  async function handleFinishTable() {
+  const handleFinishTable = async () => {
+    const abortController = new AbortController();
     try {
-      await deleteTableRes(table_id);
+      await deleteTableRes(table.table_id, abortController.signal);
     } catch (error) {
-      console.log(error);
+      setError(error);
     }
-  }
+    return () => abortController.abort();
+  };
 
   return (
     <div key={table.table_id} className="card p-4">

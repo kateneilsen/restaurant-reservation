@@ -6,7 +6,7 @@ export default function ListTables({ tables }) {
     <div className="mt-4">
       <h4>Tables</h4>
       {tables.map((table) => (
-        <Table table={table} />
+        <Table table={table} key={table.table_id} />
       ))}
     </div>
   );

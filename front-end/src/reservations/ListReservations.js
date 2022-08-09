@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-
+import React from "react";
 import Reservation from "./Reservation";
 
 export default function ListReservations({ reservations }) {
