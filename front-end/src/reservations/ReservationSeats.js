@@ -8,7 +8,7 @@ export default function ReservationSeats() {
   const [errors, setErrors] = useState([]);
   const [tables, setTables] = useState([]);
 
-  const { reservation_id } = useParams();
+  const { reservationId } = useParams();
   const history = useHistory();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function ReservationSeats() {
     const abortController = new AbortController();
     try {
       await updateTable(
-        reservation_id,
+        reservationId,
         Number(options.table_id),
         abortController.signal
       );
@@ -46,12 +46,12 @@ export default function ReservationSeats() {
     return () => abortController.abort();
   }
 
-  console.log(reservation_id);
+  console.log(reservationId);
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <h3>Reservation #{reservation_id}</h3>
+        <h3>Reservation #{reservationId}</h3>
         {tables && (
           <div>
             <select name="table_id" onChange={changeHandler}>
@@ -67,7 +67,12 @@ export default function ReservationSeats() {
         <button className="btn btn-primary btn-sm" type="submit">
           Submit
         </button>
-        <button className="btn btn-primary btn-danger">Cancel</button>
+        <button
+          className="btn btn-primary btn-danger"
+          onClick={() => history.goBack()}
+        >
+          Cancel
+        </button>
       </form>
       <ErrorAlert errors={errors} />
     </div>

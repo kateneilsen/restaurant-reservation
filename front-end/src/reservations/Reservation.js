@@ -1,9 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function Reservation({ reservation }) {
   return (
-    <div>
-      <div>Reservation #: {reservation.reservation_id}</div>
+    <div className="card pr-4">
       <div className="card-body">
         <div className="row">
           <p className="col-4">{reservation.reservation_time}</p>

@@ -9,7 +9,7 @@ export default function ListReservations({ reservations }) {
       {reservations.map((reservation) => (
         <Reservation
           reservation={reservation}
-          reservation_id={reservation.reservation_id}
+          key={reservation.reservation_id}
         />
       ))}
     </div>
