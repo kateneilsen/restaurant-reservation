@@ -45,6 +45,7 @@ export default function Table({ table }) {
           </div>
         </div>
       </div>
+      <ErrorAlert error={error} />
     </div>
   );
 }
