@@ -56,7 +56,7 @@ function hasOnlyValidProperties(req, res, next) {
 //US-01 number of people must be at least 1
 function hasValidPeople(req, res, next) {
   const people = req.body.data.people;
-  if (typeof people === "string" || people <= 0) {
+  if (people === null || people === 0 || typeof people !== "number") {
     return next({
       status: 400,
       message: "people must be a number",
@@ -145,6 +145,19 @@ async function reservationExists(req, res, next) {
   });
 }
 
+//check reservation status
+function checkStatus(req, res, next) {
+  console.log(res.locals.reservation);
+  const { status } = res.locals.reservation;
+  if (status === "seated" || status === "finished") {
+    return next({
+      status: 400,
+      message: "Reservation has already been created.",
+    });
+  }
+  next();
+}
+
 /*CRUDL*/
 
 async function list(req, res) {
@@ -164,7 +177,19 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
-  const data = await service.update(req.body.data);
+  const { reservation_id } = res.locals.reservation;
+  const updatedReservation = {
+    ...req.body.data,
+    reservation_id,
+  };
+  const data = await service.update(updatedReservation);
+  res.json({ data });
+}
+
+async function updateStatus(req, res) {
+  const { reservation_id } = res.locals.reservation;
+  const { status } = req.body.data;
+  const data = await service.updateStatus(reservation_id, status);
   res.json({ data });
 }
 
@@ -181,5 +206,10 @@ module.exports = {
     hasFutureDate,
     hasValidTime,
     asyncErrorBoundary(create),
+  ],
+  updateStatus: [
+    asyncErrorBoundary(reservationExists),
+    checkStatus,
+    asyncErrorBoundary(updateStatus),
   ],
 };

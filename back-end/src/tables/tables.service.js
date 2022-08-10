@@ -27,10 +27,11 @@ function update(reservation_id, table_id) {
     });
 }
 
-function deleteReservation({ table_id, reservation_id }) {
-  return knex("table_id")
+//update table when reservation is finished
+function finishTable(table_id) {
+  return knex("tables")
     .where({ table_id })
-    .update({ reservation_id: null })
+    .update("reservation_id", null)
     .returning("*");
 }
 
@@ -39,5 +40,5 @@ module.exports = {
   read,
   create,
   update,
-  deleteReservation,
+  finishTable,
 };
