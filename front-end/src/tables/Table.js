@@ -24,17 +24,17 @@ export default function Table({ table }) {
           <div className="row">Capacity: {table.capacity}</div>
         </div>
         <div className="col">
-          <div className="row" data-table-id-status={table.table_id}>
+          <div className="row">
             {table.reservation_id ? (
               <button
                 className="btn btn-primary btn-sm"
                 data-table-id-finish={table.table_id}
                 onClick={() =>
                   window.confirm(
-                    "Is this table ready to seat new guests? This cannot be undone."
-                      ? handleFinishTable()
-                      : console.log("You clicked cancel.")
+                    "Is this table ready to seat new guests? \n\n This cannot be undone."
                   )
+                    ? handleFinishTable()
+                    : console.log("You clicked cancel.")
                 }
               >
                 Finish
