@@ -34,6 +34,10 @@ export default function ReservationForm() {
     return () => abortController.abort();
   }
 
+  function handleNumber({ target }) {
+    setFormValues({ ...formValues, [target.name]: Number(target.value) });
+  }
+
   function changeHandler(event) {
     console.log(event.target.name);
     setFormValues({ ...formValues, [event.target.name]: event.target.value });
@@ -120,7 +124,7 @@ export default function ReservationForm() {
               min={1}
               required={true}
               value={formValues.people}
-              onChange={changeHandler}
+              onChange={handleNumber}
             />
           </div>
           <div className="row mb-2">
