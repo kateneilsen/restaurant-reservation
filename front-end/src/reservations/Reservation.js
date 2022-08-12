@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function Reservation({ reservation }) {
+  console.log(reservation);
   return (
     <div className="card pr-4">
       <div className="card-body">

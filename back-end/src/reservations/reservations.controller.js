@@ -145,14 +145,37 @@ async function reservationExists(req, res, next) {
   });
 }
 
-//check reservation status
-function checkStatus(req, res, next) {
-  console.log(res.locals.reservation);
-  const { status } = res.locals.reservation;
-  if (status === "seated" || status === "finished") {
+//validate for update
+function hasValidStatus(req, res, next) {
+  const { status } = req.body.data;
+  const validStatus = ["booked", "seated", "finished"];
+  if (!validStatus.includes(status)) {
     return next({
       status: 400,
-      message: "Reservation has already been created.",
+      message: `Invalid status. Status must be one of: ${validStatus}`,
+    });
+  }
+  next();
+}
+
+//validate status
+function statusIsBooked(req, res, next) {
+  const { status } = req.body.data;
+  if (status !== "booked") {
+    return next({
+      status: 400,
+      message: `Reservation has already been created.`,
+    });
+  }
+  next();
+}
+
+function statusIsFinished(req, body, next) {
+  const { status } = req.body.data;
+  if (status === "finished") {
+    return next({
+      status: 400,
+      message: `A finished reservation cannot be updated.`,
     });
   }
   next();
@@ -162,7 +185,13 @@ function checkStatus(req, res, next) {
 
 async function list(req, res) {
   const { date } = req.query;
-  const response = await service.list(date);
+  const { mobile_number } = req.query;
+  if (date) {
+    let response = await service.list(date);
+  }
+  if (mobile_number) {
+    response = await service.search(mobile_number);
+  }
   res.json({ data: response });
 }
 
@@ -187,10 +216,17 @@ async function update(req, res) {
 }
 
 async function updateStatus(req, res) {
+  console.log(res.locals.reservation);
   const { reservation_id } = res.locals.reservation;
   const { status } = req.body.data;
   const data = await service.updateStatus(reservation_id, status);
   res.json({ data });
+}
+
+async function destroy(req, res) {
+  const { reservation_id } = res.locals.reservation;
+  await service.destroy(reservation_id);
+  res.sendStatus(204);
 }
 
 module.exports = {
@@ -205,11 +241,13 @@ module.exports = {
     hasValidDay,
     hasFutureDate,
     hasValidTime,
+    statusIsBooked,
     asyncErrorBoundary(create),
   ],
   updateStatus: [
     asyncErrorBoundary(reservationExists),
-    checkStatus,
+    hasValidStatus,
+    statusIsFinished,
     asyncErrorBoundary(updateStatus),
   ],
 };
