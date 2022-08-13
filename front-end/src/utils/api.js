@@ -68,12 +68,6 @@ export async function listReservations(params, signal) {
     .then(formatReservationTime);
 }
 
-//read/ GET reservation by id
-export async function readReservation(reservation_id, signal) {
-  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
-  return await fetchJson(url, { signal }, {});
-}
-
 //creates/POST new reservation to database
 export async function createReservation(reservation, signal) {
   console.debug("createReservation", reservation);
@@ -85,6 +79,36 @@ export async function createReservation(reservation, signal) {
     signal,
   };
   return await fetchJson(url, options, {});
+}
+
+//read/ GET reservation by id
+export async function readReservation(reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+  return await fetchJson(url, { signal }, {});
+}
+
+//PUT: update reservation status
+export async function updateReservation(updatedReservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${updatedReservation.reservation_id}`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: updatedReservation }),
+    signal,
+  };
+  return await fetchJson(url, options, updatedReservation);
+}
+
+//update reservation status to cancelled
+export async function cancelReservation(reservation_id, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data: { status: "cancelled" } }),
+    signal,
+  };
+  return await fetchJson(url, options);
 }
 
 //GET a list of tables

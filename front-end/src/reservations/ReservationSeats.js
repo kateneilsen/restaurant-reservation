@@ -50,30 +50,36 @@ export default function ReservationSeats() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <h3>Reservation #{reservationId}</h3>
-        {tables && (
-          <div>
-            <select name="table_id" onChange={changeHandler}>
-              <option>Select a Table</option>
-              {tables.map((table) => (
-                <option value={table.table_id} key={table.table_id}>
-                  {table.table_name} - {table.capacity}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-        <button className="btn btn-primary btn-sm" type="submit">
-          Submit
-        </button>
-        <button
-          className="btn btn-primary btn-danger"
-          onClick={() => history.goBack()}
-        >
-          Cancel
-        </button>
-      </form>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <h4>Reservation #{reservationId}</h4>
+          {tables && (
+            <div className="form-group">
+              <select
+                name="table_id"
+                onChange={changeHandler}
+                className="form-control"
+              >
+                <option>Select a Table</option>
+                {tables.map((table) => (
+                  <option value={table.table_id} key={table.table_id}>
+                    {table.table_name} - {table.capacity}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <button className="btn btn-primary btn-sm m-2" type="submit">
+            Submit
+          </button>
+          <button
+            className="btn btn-danger btn-sm m-2"
+            onClick={() => history.goBack()}
+          >
+            Cancel
+          </button>
+        </form>
+      </div>
       <ErrorAlert errors={errors} />
     </div>
   );

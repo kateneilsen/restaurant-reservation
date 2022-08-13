@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
+// import ReservationSeats from "./ReservationSeats";
 
 export default function Reservation({ reservation }) {
-  console.log(reservation);
+  // const [modal, setModal] = useState(false);
+  // const toggle = () => setModal(!modal);
   return (
     <div className="card pr-4">
       <div className="card-body">
         <div className="row">
-          <p className="col-4">{reservation.reservation_time}</p>
+          <div className="col-4">
+            <p>{reservation.reservation_time}</p>
+          </div>
           <div className="col-6">
             <p className="card-text">
               {reservation.first_name} {reservation.last_name}
@@ -20,14 +24,32 @@ export default function Reservation({ reservation }) {
             {reservation.status === "booked" ? (
               <a
                 href={`/reservations/${reservation.reservation_id}/seat`}
-                className="btn btn-primary btn-sm"
+                className="btn btn-primary btn-sm m-2"
+                type="button"
+                // onClick={() => toggle()}
               >
-                Seat
+                seat
               </a>
             ) : (
               <p>{reservation.status}</p>
             )}
           </div>
+        </div>
+        <div className="row">
+          <a
+            href={`/reservations/${reservation.reservation_id}/edit`}
+            className="btn btn-secondary btn-sm m-2"
+            type="button"
+          >
+            edit
+          </a>
+          <a
+            data-reservation-id-cancel={reservation.reservation_id}
+            className="btn btn-secondary btn-sm m-2"
+            type="button"
+          >
+            cancel
+          </a>
         </div>
       </div>
     </div>

@@ -37,10 +37,10 @@ export default function Table({ table }) {
                     : console.log("You clicked cancel.")
                 }
               >
-                Finish
+                finish
               </button>
             ) : (
-              "Free"
+              "free"
             )}
           </div>
         </div>
