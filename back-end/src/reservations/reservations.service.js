@@ -23,11 +23,10 @@ function create(newReservation) {
 }
 
 //changed status from booked to seated
-function updateStatus(updatedReservation) {
+function updateStatus(reservation_id, status) {
   return knex("reservations")
-    .select("*")
-    .where({ reservation_id: updatedReservation.reservation_id })
-    .update({ status: updatedReservation.status })
+    .where({ reservation_id })
+    .update({ status })
     .then((updatedRecord) => updatedRecord[0]);
 }
 

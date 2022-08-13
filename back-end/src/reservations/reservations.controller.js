@@ -151,11 +151,8 @@ function hasValidStatus(req, res, next) {
   const { status } = req.body.data;
   const validStatus = ["booked", "seated", "finished"];
 
-  if (status) {
-    if (validStatus.includes(status)) {
-      res.locals.status = status;
-      return next();
-    }
+  if (validStatus.includes(status)) {
+    return next();
   }
   next({
     status: 400,
@@ -192,11 +189,11 @@ function statusIsFinished(req, res, next) {
 }
 
 function unknownStatus(req, res, next) {
-  const { status } = res.locals.reservation;
-  if (status !== "booked" || status !== "seated" || status !== "finished") {
-    next({
+  const { status } = req.body.data;
+  if (status === null || status === "undefined") {
+    return next({
       status: 400,
-      message: `cannot make reservations for unknown status`,
+      message: `Status is unknown.`,
     });
   }
   next();
@@ -242,14 +239,11 @@ async function update(req, res) {
 
 //updated status
 async function updateStatus(req, res) {
-  const { reservation_id, status } = res.locals.reservation;
-  // const { status } = req.body.data;
-  const updatedReservation = {
-    reservation_id: reservation_id,
-    status: status,
-  };
-  const data = await service.update(updatedReservation);
-  res.json({ data });
+  const { reservation_id } = res.locals.reservation;
+  const { status } = req.body.data;
+
+  const data = await service.updateStatus(reservation_id, status);
+  res.json({ data: { status } });
 }
 
 async function destroy(req, res) {
@@ -274,11 +268,10 @@ module.exports = {
     asyncErrorBoundary(create),
   ],
   updateStatus: [
-    hasOnlyValidProperties,
     asyncErrorBoundary(reservationExists),
     hasValidStatus,
     statusIsFinished,
-    // unknownStatus,
+    unknownStatus,
     asyncErrorBoundary(updateStatus),
   ],
   update: [

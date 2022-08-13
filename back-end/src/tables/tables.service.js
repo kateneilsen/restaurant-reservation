@@ -18,7 +18,7 @@ function create(table) {
 function update(reservation_id, table_id) {
   return knex("reservations")
     .where({ reservation_id })
-    .update("status", "seated")
+    .update({ status: "seated" })
     .then(() => {
       return knex("tables")
         .where({ table_id })
@@ -29,14 +29,15 @@ function update(reservation_id, table_id) {
 
 //update table when reservation is finished
 function finishTable(table_id, reservation_id) {
-  return knex("tables")
-    .where({ table_id })
-    .update("reservation_id", null)
+  return knex("reservations")
+    .where({ reservation_id })
+    .update({ status: "finished" })
     .returning("*")
     .then(() => {
-      return knex("reservations")
-        .where({ reservation_id })
-        .update("status", "finished");
+      return knex("tables")
+        .where({ table_id })
+        .update({ reservation_id: null })
+        .returning("*");
     });
 }
 
