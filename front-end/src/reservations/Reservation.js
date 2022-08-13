@@ -17,12 +17,16 @@ export default function Reservation({ reservation }) {
             </p>
           </div>
           <div className="col-2 p-2">
-            <a
-              href={`/reservations/${reservation.reservation_id}/seat`}
-              className="btn btn-primary btn-sm"
-            >
-              Seat
-            </a>
+            {reservation.status === "booked" ? (
+              <a
+                href={`/reservations/${reservation.reservation_id}/seat`}
+                className="btn btn-primary btn-sm"
+              >
+                Seat
+              </a>
+            ) : (
+              <p>{reservation.status}</p>
+            )}
           </div>
         </div>
       </div>

@@ -27,6 +27,7 @@ export default function ReservationForm() {
         abortController.signal
       );
       history.push(`/dashboard?date=${formValues.reservation_date}`);
+      console.log(responseFromAPI);
       return responseFromAPI;
     } catch (error) {
       setErrors(error);
@@ -127,9 +128,6 @@ export default function ReservationForm() {
               onChange={handleNumber}
             />
           </div>
-          <div className="row mb-2">
-            <ErrorAlert errors={errors} />
-          </div>
 
           <button type="submit" className="btn btn-primary m-2">
             Submit
@@ -142,6 +140,9 @@ export default function ReservationForm() {
           >
             Cancel
           </button>
+        </div>
+        <div className="row mb-2">
+          <ErrorAlert errors={errors} />
         </div>
       </form>
     </div>

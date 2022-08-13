@@ -25,6 +25,7 @@ const VALID_PROPERTIES = [
   "reservation_date",
   "reservation_time",
   "people",
+  "status",
 ];
 
 const hasRequiredProperties = hasProperties(
@@ -38,7 +39,7 @@ const hasRequiredProperties = hasProperties(
 
 // //validation middleware - request body only includes the valid properties
 function hasOnlyValidProperties(req, res, next) {
-  console.log(req.body.data);
+  // console.log(req.body.data);
   const { data = {} } = req.body;
 
   const invalidFields = Object.keys(data).filter(
@@ -149,50 +150,73 @@ async function reservationExists(req, res, next) {
 function hasValidStatus(req, res, next) {
   const { status } = req.body.data;
   const validStatus = ["booked", "seated", "finished"];
-  if (!validStatus.includes(status)) {
-    return next({
-      status: 400,
-      message: `Invalid status. Status must be one of: ${validStatus}`,
-    });
+
+  if (status) {
+    if (validStatus.includes(status)) {
+      res.locals.status = status;
+      return next();
+    }
   }
-  next();
+  next({
+    status: 400,
+    message: `invalid status: ${status}. Status must be one of these options: ${validStatus.join(
+      ", "
+    )}`,
+  });
 }
 
-//validate status
+//validate status for create
 function statusIsBooked(req, res, next) {
   const { status } = req.body.data;
-  if (status !== "booked") {
-    return next({
-      status: 400,
-      message: `Reservation has already been created.`,
-    });
+  if (status) {
+    if (status !== "booked") {
+      next({
+        status: 400,
+        message: `New reservation can't have the status ${status}`,
+      });
+    }
   }
   next();
 }
 
-function statusIsFinished(req, body, next) {
-  const { status } = req.body.data;
+//validate status is not finished for updating status
+function statusIsFinished(req, res, next) {
+  const { status } = res.locals.reservation;
   if (status === "finished") {
     return next({
       status: 400,
-      message: `A finished reservation cannot be updated.`,
+      message: "A finished status cannot be updated",
+    });
+  }
+  next();
+}
+
+function unknownStatus(req, res, next) {
+  const { status } = res.locals.reservation;
+  if (status !== "booked" || status !== "seated" || status !== "finished") {
+    next({
+      status: 400,
+      message: `cannot make reservations for unknown status`,
     });
   }
   next();
 }
 
 /*CRUDL*/
-
+//list by date or mobile number
 async function list(req, res) {
   const { date } = req.query;
   const { mobile_number } = req.query;
+  let data = null;
+
   if (date) {
-    let response = await service.list(date);
+    data = await service.listByDate(date);
+  } else if (mobile_number) {
+    data = await service.search(mobile_number);
+  } else {
+    data = await service.list();
   }
-  if (mobile_number) {
-    response = await service.search(mobile_number);
-  }
-  res.json({ data: response });
+  res.json({ data });
 }
 
 function read(req, res) {
@@ -201,6 +225,7 @@ function read(req, res) {
 }
 
 async function create(req, res) {
+  console.log(req.body.data);
   const data = await service.create(req.body.data);
   res.status(201).json({ data });
 }
@@ -215,16 +240,20 @@ async function update(req, res) {
   res.json({ data });
 }
 
+//updated status
 async function updateStatus(req, res) {
-  console.log(res.locals.reservation);
-  const { reservation_id } = res.locals.reservation;
-  const { status } = req.body.data;
-  const data = await service.updateStatus(reservation_id, status);
+  const { reservation_id, status } = res.locals.reservation;
+  // const { status } = req.body.data;
+  const updatedReservation = {
+    reservation_id: reservation_id,
+    status: status,
+  };
+  const data = await service.update(updatedReservation);
   res.json({ data });
 }
 
 async function destroy(req, res) {
-  const { reservation_id } = res.locals.reservation;
+  const { reservation_id } = req.body.data;
   await service.destroy(reservation_id);
   res.sendStatus(204);
 }
@@ -236,18 +265,27 @@ module.exports = {
     hasData,
     hasOnlyValidProperties,
     hasRequiredProperties,
+    statusIsBooked,
     hasValidPeople,
     hasValidDate,
     hasValidDay,
     hasFutureDate,
     hasValidTime,
-    statusIsBooked,
     asyncErrorBoundary(create),
   ],
   updateStatus: [
+    hasOnlyValidProperties,
     asyncErrorBoundary(reservationExists),
     hasValidStatus,
     statusIsFinished,
+    // unknownStatus,
     asyncErrorBoundary(updateStatus),
   ],
+  update: [
+    asyncErrorBoundary(reservationExists),
+    hasValidStatus,
+    statusIsBooked,
+    asyncErrorBoundary(update),
+  ],
+  delete: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(destroy)],
 };
