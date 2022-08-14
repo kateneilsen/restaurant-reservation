@@ -1,42 +1,60 @@
 import React, { useState } from "react";
-import useQuery from "../utils/useQuery";
 import { listReservations } from "../utils/api";
+import ListReservations from "./ListReservations";
+import ErrorAlert from "../layout/ErrorAlert";
 
 export default function Search() {
-  const [searchForm, setSearchForm] = useState("");
+  const [search, setSearch] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const [reservations, setReservations] = useState([]);
-  const [errors, setErrors] = useState([]);
-  const query = useQuery();
+  const [error, setError] = useState("");
 
-  const mobile_number = query.get("mobile_number");
-
-  function loadReservations() {
+  async function submitHandler(event) {
+    event.preventDefault();
     const abortController = new AbortController();
-    listReservations({ mobile_number }, abortController.signal)
-      .then(setReservations)
-      .catch(setErrors);
+    try {
+      const response = await listReservations(
+        { mobile_number: search },
+        abortController.signal
+      );
+      setReservations(response);
+      setLoaded(true);
+    } catch (error) {
+      setError(error);
+    }
     return () => abortController.abort();
   }
 
-  const handleInput = (event) => {
-    setSearchForm({ ...searchForm, [event.target.name]: event.target.value });
+  const handleSearch = ({ target }) => {
+    setSearch({ ...search, [target.name]: target.value });
   };
 
   return (
     <div className="container mt-4">
-      <label className="row">Search for a Reservation by Mobile Number</label>
-      <div className="row">
-        <input
-          type="search"
-          className="w-25"
-          placeholder="Enter a customer's phone number"
-          name="mobile_number"
-          onChange={handleInput}
-        />
-        <button type="submit" className="btn btn-primary btn-sm">
-          Find
-        </button>
-      </div>
+      <ErrorAlert error={error} />
+      <h4>Search by Phone Number</h4>
+      <form onSubmit={submitHandler}>
+        <label className="row">Enter Mobile Number</label>
+        <div className="row">
+          <input
+            type="search"
+            className="w-25"
+            placeholder="Enter a customer's phone number"
+            name="mobile_number"
+            required={true}
+            value={search}
+            onChange={handleSearch}
+          />
+          <button type="submit" className="btn btn-primary btn-sm">
+            Find
+          </button>
+        </div>
+      </form>
+      {reservations.length > 0 ? (
+        <ListReservations reservations={reservations} />
+      ) : (
+        <p>No reservations found.</p>
+      )}
     </div>
   );
 }
