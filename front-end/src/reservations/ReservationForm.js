@@ -40,7 +40,6 @@ export default function ReservationForm() {
   }
 
   function changeHandler(event) {
-    console.log(event.target.name);
     setFormValues({ ...formValues, [event.target.name]: event.target.value });
   }
 

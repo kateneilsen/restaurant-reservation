@@ -39,7 +39,6 @@ export default function Reservation({ reservation }) {
           <a
             href={`/reservations/${reservation.reservation_id}/edit`}
             className="btn btn-secondary btn-sm m-2"
-            type="button"
           >
             edit
           </a>

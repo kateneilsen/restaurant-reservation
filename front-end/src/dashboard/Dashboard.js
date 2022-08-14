@@ -73,10 +73,10 @@ function Dashboard({ date }) {
 
       <div className="container">
         <div className="row">
-          <div className="col-6">
+          <div className="col-7">
             <ListReservations reservations={reservations} tables={tables} />
           </div>
-          <div className="col-6">
+          <div className="col-5">
             <ListTables tables={tables} />
           </div>
         </div>
