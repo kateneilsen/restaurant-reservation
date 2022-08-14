@@ -5,7 +5,7 @@ import ErrorAlert from "../layout/ErrorAlert";
 
 export default function Search() {
   const [search, setSearch] = useState("");
-  const [loaded, setLoaded] = useState(false);
+  const [mobileExists, setMobileExists] = useState(false);
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState("");
 
@@ -18,7 +18,8 @@ export default function Search() {
         abortController.signal
       );
       setReservations(response);
-      setLoaded(true);
+      setMobileExists(true);
+      setSearch("");
     } catch (error) {
       setError(error);
     }
@@ -26,7 +27,7 @@ export default function Search() {
   }
 
   const handleSearch = ({ target }) => {
-    setSearch({ ...search, [target.name]: target.value });
+    setSearch(target.value);
   };
 
   return (
@@ -34,10 +35,9 @@ export default function Search() {
       <ErrorAlert error={error} />
       <h4>Search by Phone Number</h4>
       <form onSubmit={submitHandler}>
-        <label className="row">Enter Mobile Number</label>
         <div className="row">
           <input
-            type="search"
+            type="text"
             className="w-25"
             placeholder="Enter a customer's phone number"
             name="mobile_number"
@@ -52,8 +52,10 @@ export default function Search() {
       </form>
       {reservations.length > 0 ? (
         <ListReservations reservations={reservations} />
-      ) : (
+      ) : mobileExists && reservations.length === 0 ? (
         <p>No reservations found.</p>
+      ) : (
+        ""
       )}
     </div>
   );

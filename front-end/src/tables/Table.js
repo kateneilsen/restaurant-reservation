@@ -1,15 +1,23 @@
 import React, { useState } from "react";
 import { deleteTableRes } from "../utils/api";
-import { useParams } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
+import { useHistory } from "react-router";
 
 export default function Table({ table }) {
   const [error, setError] = useState(false);
+  const history = useHistory();
 
-  const handleFinishTable = async () => {
+  const handleFinishTable = async (table_id) => {
     const abortController = new AbortController();
     try {
-      await deleteTableRes(table.table_id, abortController.signal);
+      if (
+        window.confirm(
+          "Is this table ready to seat new guests? \n\n This cannot be undone."
+        )
+      ) {
+        await deleteTableRes(table_id, abortController.signal);
+        history.go();
+      }
     } catch (error) {
       setError(error);
     }
@@ -25,24 +33,23 @@ export default function Table({ table }) {
         </div>
         <div className="col">
           <div className="row">
-            {table.reservation_id ? (
-              <button
-                className="btn btn-primary btn-sm"
-                data-table-id-finish={table.table_id}
-                onClick={() =>
-                  window.confirm(
-                    "Is this table ready to seat new guests? \n\n This cannot be undone."
-                  )
-                    ? handleFinishTable()
-                    : console.log("You clicked cancel.")
-                }
-              >
-                finish
-              </button>
-            ) : (
-              "free"
-            )}
+            <div className="col" data-table-id-status={table.table_id}>
+              {table.reservation_id ? <p>Occupied</p> : <p>Free</p>}
+            </div>
           </div>
+        </div>
+        <div className="col">
+          {table.reservation_id === null ? (
+            ""
+          ) : (
+            <button
+              className="btn btn-primary btn-sm"
+              data-table-id-finish={table.table_id}
+              onClick={() => handleFinishTable(table.table_id)}
+            >
+              Finish
+            </button>
+          )}
         </div>
       </div>
       <ErrorAlert error={error} />
