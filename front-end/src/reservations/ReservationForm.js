@@ -10,14 +10,15 @@ export default function ReservationForm({
   function cancelHandler() {
     history.goBack();
   }
+  const date = `${formValues.reservation_date}`.substring(0, 10);
 
   return (
     <div>
       <h1 className="mb-3">Create Reservation</h1>
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="col-6 form-group">
-          <div className="row mb-2">
-            <label>First Name</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="first_name">First Name</label>
             <input
               id="first_name"
               placeholder="First Name"
@@ -30,8 +31,8 @@ export default function ReservationForm({
             />
           </div>
 
-          <div className="row mb-2">
-            <label>Last Name:</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="last_name">Last Name:</label>
             <input
               id="last_name"
               placeholder="Last Name"
@@ -44,8 +45,8 @@ export default function ReservationForm({
             />
           </div>
 
-          <div className="row mb-2">
-            <label>Mobile Number</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="mobile_number">Mobile Number</label>
             <input
               id="mobile_number"
               placeholder="(---) --- ----"
@@ -58,23 +59,25 @@ export default function ReservationForm({
             />
           </div>
 
-          <div className="row mb-2">
-            <label>Date</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="reservation_date">Date</label>
             <input
               id="reservation_date"
               className="form-control"
+              pattern="\d{4}-\d{2}-\d{2}"
               name="reservation_date"
               type="date"
               required={true}
-              value={formValues.reservation_date}
+              value={date}
               onChange={changeHandler}
             />
           </div>
 
-          <div className="row mb-2">
-            <label>Time</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="reservation_time">Time</label>
             <input
               id="reservation_time"
+              pattern="[0-9]{2}:[0-9]{2}"
               className="form-control"
               name="reservation_time"
               type="time"
@@ -84,8 +87,8 @@ export default function ReservationForm({
             />
           </div>
 
-          <div className="row mb-2">
-            <label>Number of People</label>
+          <div className="form-group row mb-2">
+            <label htmlFor="people">Number of People</label>
             <input
               id="people"
               className="form-control"

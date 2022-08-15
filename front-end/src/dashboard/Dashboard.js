@@ -6,6 +6,7 @@ import { previous, next, today } from "../utils/date-time";
 import { useHistory } from "react-router-dom";
 import ListReservations from "../reservations/ListReservations";
 import ListTables from "../tables/ListTables";
+const dayjs = require("dayjs");
 
 /**
  * Defines the dashboard page.
@@ -59,7 +60,7 @@ function Dashboard({ date }) {
           className="btn btn-info m-2"
           onClick={() => history.push(`/dashboard?date=${today()}`)}
         >
-          {date}
+          {dayjs(date).format("MM-DD-YYYY")}
         </button>
         <button
           type="button"

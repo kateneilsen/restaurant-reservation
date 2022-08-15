@@ -7,6 +7,12 @@ export default function Reservation({ reservation }) {
   const [error, setError] = useState(null);
   const history = useHistory();
 
+  let [hours, minutes] = `${reservation.reservation_time}`.split(":");
+
+  const amOrPm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12;
+  const time = `${hours}:${minutes} ${amOrPm}`;
+
   async function handleCancel(reservationId) {
     if (
       window.confirm(
@@ -29,7 +35,7 @@ export default function Reservation({ reservation }) {
           <div className="card-body">
             <div className="row">
               <div className="col-4">
-                <p>{reservation.reservation_time}</p>
+                <p>{time}</p>
               </div>
               <div className="col-6">
                 <p className="card-text">
