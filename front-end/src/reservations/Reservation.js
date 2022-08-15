@@ -47,8 +47,8 @@ export default function Reservation({ reservation }) {
                     {reservation.mobile_number}
                   </small>
                 </p>
-                <p data-reservation-id-status={reservation.status}>
-                  {reservation.status}
+                <p data-reservation-id-status={`${reservation.reservation_id}`}>
+                  Status: {reservation.status}
                 </p>
               </div>
               <div
