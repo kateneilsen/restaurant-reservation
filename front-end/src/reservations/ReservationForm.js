@@ -1,53 +1,15 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { createReservation } from "../utils/api";
-import ErrorAlert from "../layout/ErrorAlert";
+import React from "react";
 
-export default function ReservationForm() {
-  const initialState = {
-    first_name: "",
-    last_name: "",
-    mobile_number: "",
-    reservation_date: "",
-    reservation_time: "",
-    people: "",
-  };
-
-  const [formValues, setFormValues] = useState({ ...initialState });
-  const [errors, setErrors] = useState([]);
-
-  const history = useHistory();
-
-  async function submitHandler(event) {
-    event.preventDefault();
-    const abortController = new AbortController();
-    try {
-      const responseFromAPI = await createReservation(
-        formValues,
-        abortController.signal
-      );
-      history.push(`/dashboard?date=${formValues.reservation_date}`);
-      console.log(responseFromAPI);
-      return responseFromAPI;
-    } catch (error) {
-      setErrors(error);
-    }
-    return () => abortController.abort();
-  }
-
-  function handleNumber({ target }) {
-    setFormValues({ ...formValues, [target.name]: Number(target.value) });
-  }
-
-  function changeHandler(event) {
-    setFormValues({ ...formValues, [event.target.name]: event.target.value });
-  }
-
+export default function ReservationForm({
+  formValues,
+  submitHandler,
+  handleNumber,
+  changeHandler,
+  history,
+}) {
   function cancelHandler() {
     history.goBack();
   }
-
-  // const today = new Date();
 
   return (
     <div>
@@ -57,6 +19,8 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>First Name</label>
             <input
+              id="first_name"
+              placeholder="First Name"
               className="form-control"
               name="first_name"
               type="text"
@@ -69,6 +33,8 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>Last Name:</label>
             <input
+              id="last_name"
+              placeholder="Last Name"
               className="form-control"
               name="last_name"
               type="text"
@@ -81,10 +47,11 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>Mobile Number</label>
             <input
+              id="mobile_number"
+              placeholder="(---) --- ----"
               className="form-control"
               name="mobile_number"
               type="text"
-              placeholder="000-000-0000"
               required={true}
               value={formValues.mobile_number}
               onChange={changeHandler}
@@ -94,6 +61,7 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>Date</label>
             <input
+              id="reservation_date"
               className="form-control"
               name="reservation_date"
               type="date"
@@ -106,6 +74,7 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>Time</label>
             <input
+              id="reservation_time"
               className="form-control"
               name="reservation_time"
               type="time"
@@ -118,9 +87,11 @@ export default function ReservationForm() {
           <div className="row mb-2">
             <label>Number of People</label>
             <input
+              id="people"
               className="form-control"
               name="people"
               type="number"
+              placeholder={1}
               min={1}
               required={true}
               value={formValues.people}
@@ -140,9 +111,7 @@ export default function ReservationForm() {
             Cancel
           </button>
         </div>
-        <div className="row mb-2">
-          <ErrorAlert errors={errors} />
-        </div>
+        <div className="row mb-2"></div>
       </form>
     </div>
   );
