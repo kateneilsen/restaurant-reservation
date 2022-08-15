@@ -42,17 +42,21 @@ export default function EditReservation() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reservationId]);
 
-  async function submitHandler(event) {
+  const submitHandler = async (event) => {
     event.preventDefault();
     const abortController = new AbortController();
     try {
-      await updateReservation(formValues, abortController.signal);
+      const response = await updateReservation(
+        formValues,
+        abortController.signal
+      );
       history.push(`/dashboard?date=${formValues.reservation_date}`);
+      return response;
     } catch (error) {
       setErrors(error);
     }
     return () => abortController.abort();
-  }
+  };
 
   const handleNumber = ({ target }) => {
     setFormValues({ ...formValues, [target.name]: Number(target.value) });

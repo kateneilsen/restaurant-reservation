@@ -91,7 +91,7 @@ export default function ReservationForm({
               className="form-control"
               name="people"
               type="number"
-              placeholder={1}
+              placeholder="1"
               min={1}
               required={true}
               value={formValues.people}
