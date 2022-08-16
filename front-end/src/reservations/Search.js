@@ -31,32 +31,34 @@ export default function Search() {
   };
 
   return (
-    <div className="container mt-4">
+    <div>
       <ErrorAlert error={error} />
-      <h4>Search by Phone Number</h4>
-      <form onSubmit={submitHandler}>
-        <div className="row">
-          <input
-            type="text"
-            className="w-25"
-            placeholder="Enter a customer's phone number"
-            name="mobile_number"
-            required={true}
-            value={search}
-            onChange={handleSearch}
-          />
-          <button type="submit" className="btn btn-primary btn-sm">
-            Find
-          </button>
-        </div>
-      </form>
-      {reservations.length > 0 ? (
-        <ListReservations reservations={reservations} />
-      ) : mobileExists && reservations.length === 0 ? (
-        <p>No reservations found.</p>
-      ) : (
-        ""
-      )}
+      <div className="container mt-4">
+        <h4>Search by Phone Number</h4>
+        <form onSubmit={submitHandler} className="m-3">
+          <div className="row">
+            <input
+              type="text"
+              className="w-25 mr-2"
+              placeholder="Enter a customer's phone number"
+              name="mobile_number"
+              required={true}
+              value={search}
+              onChange={handleSearch}
+            />
+            <button type="submit" className="btn btn-primary btn-sm">
+              Find
+            </button>
+          </div>
+        </form>
+        {reservations.length > 0 ? (
+          <ListReservations reservations={reservations} />
+        ) : mobileExists && reservations.length === 0 ? (
+          <p>No reservations found.</p>
+        ) : (
+          ""
+        )}
+      </div>
     </div>
   );
 }

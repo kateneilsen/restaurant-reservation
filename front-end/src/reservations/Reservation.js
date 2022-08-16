@@ -43,14 +43,14 @@ export default function Reservation({ reservation }) {
               </h5>
               <p className="text-muted mb-0">{reservation.mobile_number}</p>
               <p className="text-muted mb-0">
-                <u>Number of People:</u> {reservation.people}
+                <u>People:</u> {reservation.people}
               </p>
 
               <p
                 className="text-muted mb-0"
                 data-reservation-id-status={`${reservation.reservation_id}`}
               >
-                <u>status:</u> {reservation.status}
+                <u>Status:</u> {reservation.status}
               </p>
             </div>
             <div className="col-4 justify-content-center">

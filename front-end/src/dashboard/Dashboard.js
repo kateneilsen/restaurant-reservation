@@ -75,11 +75,12 @@ function Dashboard({ date }) {
 
         <div className="row">
           <div className="col-8">
-            <h4 className="mt-3">Reservations</h4>
+            <h4 className="fw-bold mt-4 ml-2">Reservations</h4>
             <ListReservations reservations={reservations} tables={tables} />
           </div>
+
           <div className="col-4">
-            <h4 className="mt-3">Tables</h4>
+            <h4 className="fw-bold mt-4 ml-2">Tables</h4>
             <ListTables tables={tables} />
           </div>
         </div>
