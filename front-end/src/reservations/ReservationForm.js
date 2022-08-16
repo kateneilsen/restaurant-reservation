@@ -14,7 +14,6 @@ export default function ReservationForm({
 
   return (
     <div>
-      <h1 className="mb-3">Create Reservation</h1>
       <form className="mb-4" onSubmit={submitHandler}>
         <div className="col-6 form-group">
           <div className="form-group row mb-2">

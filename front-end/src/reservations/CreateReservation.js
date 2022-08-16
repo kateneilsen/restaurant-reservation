@@ -46,7 +46,7 @@ export default function CreateReservation() {
 
   return (
     <div className="m-4">
-      <h3>Create Reservation</h3>
+      <h1>Create Reservation</h1>
       <ErrorAlert errors={errors} />
       <ReservationForm
         submitHandler={submitHandler}

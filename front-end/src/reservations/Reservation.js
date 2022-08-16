@@ -37,7 +37,7 @@ export default function Reservation({ reservation }) {
             <div className="col-3">
               <p className="">{time}</p>
             </div>
-            <div className="col-5">
+            <div className="col-5 justify-content-center">
               <h5 className="fw-bold ">
                 {reservation.first_name} {reservation.last_name}
               </h5>
@@ -45,15 +45,15 @@ export default function Reservation({ reservation }) {
               <p className="text-muted mb-0">
                 <u>Number of People:</u> {reservation.people}
               </p>
-            </div>
-            <div className="col-4">
+
               <p
                 className="text-muted mb-0"
                 data-reservation-id-status={`${reservation.reservation_id}`}
               >
                 <u>status:</u> {reservation.status}
               </p>
-
+            </div>
+            <div className="col-4 justify-content-center">
               {reservation.status === "booked" && (
                 <a
                   href={`/reservations/${reservation.reservation_id}/seat`}
@@ -65,7 +65,7 @@ export default function Reservation({ reservation }) {
               )}
               <a
                 href={`/reservations/${reservation.reservation_id}/edit`}
-                className="btn btn-secondary btn-sm m-2"
+                className="btn btn-secondary btn-sm m-2 "
               >
                 Edit
               </a>

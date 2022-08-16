@@ -26,30 +26,36 @@ export default function Table({ table }) {
 
   return (
     <>
-      <div className="container">
+      <li className="list-group-item align-content-center">
         <div className="row">
           <div className="col">
-            <p>Table: {table.table_name}</p>
-            <p>Capacity: {table.capacity}</p>
-          </div>
-          <div className="col" data-table-id-status={table.table_id}>
-            {table.reservation_id ? "Occupied" : "Free"}
+            <p>
+              <u>Table:</u> {table.table_name}
+            </p>
+            <p>
+              <u>Capacity:</u> {table.capacity}
+            </p>
           </div>
           <div className="col">
-            {table.reservation_id === null ? (
-              ""
-            ) : (
-              <button
-                className="btn btn-primary btn-sm"
-                data-table-id-finish={table.table_id}
-                onClick={() => handleFinishTable(table.table_id)}
-              >
-                Finish
-              </button>
-            )}
+            <p data-table-id-status={table.table_id} className="row">
+              {table.reservation_id ? "Occupied" : "Free"}
+            </p>
+            <div className="row">
+              {table.reservation_id === null ? (
+                ""
+              ) : (
+                <button
+                  className="btn btn-info btn-sm"
+                  data-table-id-finish={table.table_id}
+                  onClick={() => handleFinishTable(table.table_id)}
+                >
+                  Finish
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </li>
       <ErrorAlert error={error} />
     </>
   );
