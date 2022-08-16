@@ -3,14 +3,13 @@ import Reservation from "./Reservation";
 
 export default function ListReservations({ reservations }) {
   return (
-    <div className="mt-4">
-      <h4>Reservations</h4>
+    <ul className="list-group">
       {reservations.map((reservation) => (
         <Reservation
           reservation={reservation}
           key={reservation.reservation_id}
         />
       ))}
-    </div>
+    </ul>
   );
 }

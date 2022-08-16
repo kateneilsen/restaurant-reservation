@@ -46,38 +46,40 @@ function Dashboard({ date }) {
 
   return (
     <div>
-      <h1>Dashboard</h1>
-      <div>
-        <button
-          type="button"
-          className="btn btn-info m-2"
-          onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
-        >
-          <span className="bi bi-arrow-left-square-fill"></span>
-        </button>
-        <button
-          type="button"
-          className="btn btn-info m-2"
-          onClick={() => history.push(`/dashboard?date=${today()}`)}
-        >
-          {dayjs(date).format("MM-DD-YYYY")}
-        </button>
-        <button
-          type="button"
-          className="btn btn-info m-2"
-          onClick={() => history.push(`/dashboard?date=${next(date)}`)}
-        >
-          <span className="bi bi-arrow-right-square-fill"></span>
-        </button>
-      </div>
-      {/* <h2>Reservations for: {date}</h2> */}
-
       <div className="container">
+        <h1 className="mt-3">Dashboard</h1>
+        <div className="btn-group btn-group-lg mt-4" role="group">
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={() => history.push(`/dashboard?date=${previous(date)}`)}
+          >
+            <span className="bi bi-arrow-left-square-fill"></span>
+          </button>
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={() => history.push(`/dashboard?date=${today()}`)}
+          >
+            {dayjs(date).format("MM-DD-YYYY")}
+          </button>
+          <button
+            type="button"
+            className="btn btn-info "
+            onClick={() => history.push(`/dashboard?date=${next(date)}`)}
+          >
+            <span className="bi bi-arrow-right-square-fill"></span>
+          </button>
+        </div>
+        {/* <h2>Reservations for: {date}</h2> */}
+
         <div className="row">
-          <div className="col-7">
+          <div className="col-6">
+            <h4 className="mt-3">Reservations</h4>
             <ListReservations reservations={reservations} tables={tables} />
           </div>
-          <div className="col-5">
+          <div className="col-6">
+            <h4 className="mt-3">Tables</h4>
             <ListTables tables={tables} />
           </div>
         </div>

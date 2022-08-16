@@ -25,34 +25,32 @@ export default function Table({ table }) {
   };
 
   return (
-    <div key={table.table_id} className="card p-4">
-      <div className="row">
-        <div className="col">
-          <div className="row">Table Name: {table.table_name}</div>
-          <div className="row">Capacity: {table.capacity}</div>
-        </div>
-        <div className="col">
-          <div className="row">
-            <div className="col" data-table-id-status={table.table_id}>
-              {table.reservation_id ? <p>Occupied</p> : <p>Free</p>}
-            </div>
+    <>
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <p>Table: {table.table_name}</p>
+            <p>Capacity: {table.capacity}</p>
           </div>
-        </div>
-        <div className="col">
-          {table.reservation_id === null ? (
-            ""
-          ) : (
-            <button
-              className="btn btn-primary btn-sm"
-              data-table-id-finish={table.table_id}
-              onClick={() => handleFinishTable(table.table_id)}
-            >
-              Finish
-            </button>
-          )}
+          <div className="col" data-table-id-status={table.table_id}>
+            {table.reservation_id ? "Occupied" : "Free"}
+          </div>
+          <div className="col">
+            {table.reservation_id === null ? (
+              ""
+            ) : (
+              <button
+                className="btn btn-primary btn-sm"
+                data-table-id-finish={table.table_id}
+                onClick={() => handleFinishTable(table.table_id)}
+              >
+                Finish
+              </button>
+            )}
+          </div>
         </div>
       </div>
       <ErrorAlert error={error} />
-    </div>
+    </>
   );
 }
