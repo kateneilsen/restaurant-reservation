@@ -54,28 +54,34 @@ export default function Reservation({ reservation }) {
               </p>
             </div>
             <div className="col-4 justify-content-center">
-              {reservation.status === "booked" && (
+              <div className="row">
+                {reservation.status === "booked" && (
+                  <a
+                    href={`/reservations/${reservation.reservation_id}/seat`}
+                    className="btn btn-info btn-sm mb-2"
+                    type="button"
+                  >
+                    Seat
+                  </a>
+                )}
+              </div>
+              <div className="row">
                 <a
-                  href={`/reservations/${reservation.reservation_id}/seat`}
-                  className="btn btn-info btn-sm m-2"
-                  type="button"
+                  href={`/reservations/${reservation.reservation_id}/edit`}
+                  className="btn btn-secondary btn-sm mb-2"
                 >
-                  Seat
+                  Edit
                 </a>
-              )}
-              <a
-                href={`/reservations/${reservation.reservation_id}/edit`}
-                className="btn btn-secondary btn-sm m-2 "
-              >
-                Edit
-              </a>
-              <button
-                data-reservation-id-cancel={reservation.reservation_id}
-                className="btn btn-secondary btn-sm m-2"
-                onClick={() => handleCancel(reservation.reservation_id)}
-              >
-                Cancel
-              </button>
+              </div>
+              <div className="row">
+                <button
+                  data-reservation-id-cancel={reservation.reservation_id}
+                  className="btn btn-secondary btn-sm mb-2"
+                  onClick={() => handleCancel(reservation.reservation_id)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </li>

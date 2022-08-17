@@ -26,9 +26,9 @@ export default function Table({ table }) {
 
   return (
     <>
-      <li className="list-group-item align-content-center">
+      <li className="list-group-item">
         <div className="row">
-          <div className="col-sm">
+          <div className="col">
             <p>
               <u>Table:</u> {table.table_name}
             </p>
@@ -36,7 +36,7 @@ export default function Table({ table }) {
               <u>Capacity:</u> {table.capacity}
             </p>
           </div>
-          <div className="col-sm">
+          <div className="col">
             <p data-table-id-status={table.table_id} className="row">
               {table.reservation_id ? "Occupied" : "Free"}
             </p>
