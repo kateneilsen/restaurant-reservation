@@ -48,10 +48,10 @@ export default function ReservationForm({
             <label htmlFor="mobile_number">Mobile Number</label>
             <input
               id="mobile_number"
-              placeholder="(---) --- ----"
+              placeholder="--- --- ----"
               className="form-control"
               name="mobile_number"
-              type="text"
+              type="number"
               required={true}
               value={formValues.mobile_number}
               onChange={changeHandler}
