@@ -37,7 +37,6 @@ function hasData(req, res, next) {
 async function tableExists(req, res, next) {
   const { table_id } = req.params;
   const table = await service.read(table_id);
-  console.log(table);
   if (table) {
     res.locals.table = table;
     return next();
@@ -128,7 +127,6 @@ function sufficientCapacity(req, res, next) {
 
 //check if table is not occupied
 function checkNotOccupied(req, res, next) {
-  console.log(res.locals.table);
   const { reservation_id } = res.locals.table;
   if (!reservation_id) {
     next({
@@ -167,7 +165,6 @@ async function update(req, res) {
 async function destroy(req, res) {
   const { table_id } = req.params;
   const { reservation_id } = res.locals.table;
-  console.log(reservation_id);
   const data = await service.finishTable(table_id, reservation_id);
   res.status(200).json({ data });
 }
