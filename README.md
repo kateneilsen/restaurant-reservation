@@ -3,7 +3,7 @@
 The Restaurant Reservation System is an application, for managing schedualing for restaurants staff. Restaurant workers can track, edit, and cancel reservations, as well as monitor available tables and add new tables as needed.
 
 **Live Application:**
-<https://restaurant-reservations-4emjxwc0v-kateneilsen.vercel.app>
+<https://restaurant-reservations-lemon.vercel.app/dashboard>
 
 ## Technology Used
 
